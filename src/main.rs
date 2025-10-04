@@ -20,7 +20,7 @@
 
 use std::fs::File;
 
-use qu::ir::{Location, ModuleAnnotation, parse::Parse as _};
+use qu::ir::{parse::Parse as _, FunctionAnnotation, Location, ModuleAnnotation};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt::init();
@@ -35,12 +35,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         },
     )?;
 
-    let (annotation1, len1) = ModuleAnnotation::parse((), &tokens).unwrap();
-    println!("{annotation1:#?} (length {len1})");
-    let (annotation2, len2) = ModuleAnnotation::parse((), &tokens[len1..]).unwrap();
-    println!("{annotation2:#?} (length {len2})");
-    let (annotation3, len3) = ModuleAnnotation::parse((), &tokens[(len1 + len2)..]).unwrap();
-    println!("{annotation3:#?} (length {len3})");
+    let (_, len1) = ModuleAnnotation::debug_output((), &tokens).unwrap();
+    let (_, len2) = ModuleAnnotation::debug_output((), &tokens[len1..]).unwrap();
+    let (_, len3) = ModuleAnnotation::debug_output((), &tokens[(len1 + len2)..]).unwrap();
+    let (_, len4) = FunctionAnnotation::debug_output((), &tokens[(len1 + len2 + len3)..]).unwrap();
 
     Ok(())
 }

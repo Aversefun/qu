@@ -82,12 +82,12 @@ macro_rules! impl_unwrap {
         paste::paste! {
             #[doc = concat!("Returns the ", stringify!($t), " value if it has one.")]
             $(#[$attrs])*
-            ///
-            /// # Panics
+            #[doc = ""]
+            #[doc = "# Panics"]
             #[doc = concat!("If this value is not a [`", stringify!($ty), "`], then this will panic")]
             #[allow(clippy::double_must_use, unused_variables)]
             #[must_use]
-            pub fn [< unwrap_ $name >](&self) -> $t {
+            pub fn [< unwrap_ $name >](self) -> $t {
                 match self {
                     $p => {$e},
                     _ => panic!(concat!(
@@ -98,12 +98,12 @@ macro_rules! impl_unwrap {
 
             #[doc = concat!("Returns the ", stringify!($t), " value if it has one.")]
             $(#[$attrs])*
-            ///
-            /// # Errors
+            #[doc = ""]
+            #[doc = "# Errors"]
             #[doc = concat!("If this value is not a [`", stringify!($ty), "`], then this will return a
                              [`IRWrongValueError`](crate::errors::IRWrongValueError).")]
             #[allow(unused_variables)]
-            pub fn [< ok_ $name >](&self) -> Result<$t, $crate::errors::IRWrongValueError<'_>> {
+            pub fn [< ok_ $name >](self) -> Result<$t, $crate::errors::IRWrongValueError<'a>> {
                 match self {
                     $p => Ok({$e}),
                     _ => Err($crate::errors::IRWrongValueError::IsntExpectedValue(
@@ -114,10 +114,10 @@ macro_rules! impl_unwrap {
 
             #[doc = concat!("Returns the ", stringify!($t), " value if it has one.")]
             $(#[$attrs])*
-            ///
+            #[doc = ""]
             #[doc = concat!("If this value is not a [`", stringify!($ty), "`], then this will return None.")]
             #[allow(unused_variables)]
-            pub fn [< some_ $name >](&self) -> Option<$t> {
+            pub fn [< some_ $name >](self) -> Option<$t> {
                 match self {
                     $p => Some({$e}),
                     _ => None,
@@ -128,7 +128,7 @@ macro_rules! impl_unwrap {
         }
     };
     ($(#[$attrs:meta])* $parent:ty, $t:ty, $ty:path, $name:ident) => {
-        impl_unwrap!($(#[$attrs])* $parent, $t, $ty, $ty (v) => v.clone(), $name);
+        impl_unwrap!($(#[$attrs])* $parent, $t, $ty, $ty (v) => v, $name);
     };
 }
 
@@ -457,7 +457,7 @@ pub enum FunctionDef<'a> {
     Internal {
         /// The signature of the function.
         sig: FunctionSignature<'a>,
-        /// Function-scoped variables.
+        /// Function-scoped variables. Includes parameters.
         func_vars: List<'a, (Str<'a>, Type<'a>)>,
         /// The code of the function.
         code: List<'a, Block<'a>>,

@@ -1,6 +1,8 @@
 //! Tokenization of QIR.
 
-use crate::{Str, errors::IRTokenizerError, ir::Location};
+use crate::{
+    errors::IRTokenizerError, ir::{impl_is, impl_unwrap, Location}, Str
+};
 
 /// The type of a string literal.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -71,7 +73,7 @@ pub enum RawToken<'a> {
     Block,
     /// =
     Assign,
-    /// Tokenizer does some special stuff to serialize everything after the start of an inline assembly block
+    /// The tokenizer does some special stuff to serialize everything after the start of an inline assembly block
     /// into this.
     InlineAssemblyContents(Str<'a>),
     /// +
@@ -81,11 +83,48 @@ pub enum RawToken<'a> {
     /// /
     Div,
     /// %
-    Mod,
+    Rem,
     /// .
     Property,
     /// Any whitespace character. Should never be produced by the tokenizer.
     Whitespace,
+}
+
+impl<'a> RawToken<'a> {
+    impl_unwrap!(RawToken, Str<'a>, RawToken::Ident, ident);
+    impl_unwrap!(RawToken, Str<'a>, RawToken::NumericLiteral, num_lit);
+    impl_unwrap!(RawToken, Str<'a>, RawToken::StrLiteral, RawToken::StrLiteral (_, v) => v, str_lit);
+    impl_unwrap!(RawToken, StrType, RawToken::StrLiteral, RawToken::StrLiteral (ty, _) => ty, str_lit_ty);
+    impl_unwrap!(RawToken, Str<'a>, RawToken::InlineAssemblyContents, inline_asm);
+
+    impl_is!(RawToken::ModuleAnnotation, module_annotation);
+    impl_is!(RawToken::OpenParen, open_paren);
+    
+    impl_is!(RawToken::CloseParen, close_paren);
+    impl_is!(RawToken::Newline, newline);
+    impl_is!(RawToken::Comma, comma);
+    impl_is!(RawToken::ItemAnnotation, item_annotation);
+    impl_is!(RawToken::Function, function);
+    impl_is!(RawToken::Returns, returns);
+    impl_is!(RawToken::Bang, bang);
+    impl_is!(RawToken::Continues, continues);
+    impl_is!(RawToken::Struct, struct_kw);
+    impl_is!(RawToken::OpenCurly, open_curly);
+    impl_is!(RawToken::Variable, variable);
+    impl_is!(RawToken::Colon, colon);
+    impl_is!(RawToken::PointerOrMul, pointer_or_mul);
+    impl_is!(RawToken::OpenSquare, open_square);
+    impl_is!(RawToken::Semicolon, semicolon);
+    impl_is!(RawToken::CloseSquare, close_square);
+    impl_is!(RawToken::CloseCurly, close_curly);
+    impl_is!(RawToken::Block, block);
+    impl_is!(RawToken::Assign, assign);
+
+    impl_is!(RawToken::Plus, plus);
+    impl_is!(RawToken::Sub, sub);
+    impl_is!(RawToken::Div, div);
+    impl_is!(RawToken::Rem, rem);
+    impl_is!(RawToken::Property, property);
 }
 
 /// A character stream used for turning into tokens
@@ -267,7 +306,7 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
                 Ok((None, len))
             }
             '/' => Ok((Some(RawToken::Div), 1)),
-            '%' => Ok((Some(RawToken::Mod), 1)),
+            '%' => Ok((Some(RawToken::Rem), 1)),
             '-' if chs[1].is_ascii_digit() => parse_number::<T>(chs, loc.clone()),
             '-' => Ok((Some(RawToken::Sub), 1)),
             '0'..='9' => parse_number::<T>(chs, loc.clone()),

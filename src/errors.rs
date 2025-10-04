@@ -84,9 +84,9 @@ define_error! {
         /// An invalid token was encountered when attempting to parse something.
         InvalidToken(tok: RawToken<'a>, loc: Location<'a>, note: &'static str) = "unexpected token {tok:?} at {loc}: {note}",
         /// An error was encountered when parsing an integer literal.
-        ParseIntError(err: ParseIntError, loc: Location<'a>) = "error parsing integer literal at {loc}: {err}",
+        ParseIntError(err: ParseIntError, tok: RawToken<'a>, loc: Location<'a>) = "error parsing integer literal ({tok:?}) at {loc}: {err}",
         /// An error was encountered when parsing an float literal.
-        ParseFloatError(err: ParseFloatError, loc: Location<'a>) = "error parsing float literal at {loc}: {err}",
+        ParseFloatError(err: ParseFloatError, tok: RawToken<'a>, loc: Location<'a>) = "error parsing float literal ({tok:?}) at {loc}: {err}",
         /// An unexpected metadata value was passed.
         UnexpectedMetaValue(note: Str<'a>) = "unexpected metadata value: {note}",
         /// An invalid value in the token was passed.

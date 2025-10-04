@@ -2,11 +2,10 @@
 @@runtime_checks(array_bounds, underflow)
 @@check_violated(libc_exit(1))
 
-// extern functions are never mangled
-@extern(C,"exit")
-fn libc_exit(i32) -> !; // -> ! function returning is undefined behavior
+@extern(C, "exit")
+fn libc_exit(i32) -> !; // function returning is undefined behavior
 
-@extern(C,"printf")
+@extern(C, "printf")
 fn libc_printf(c_str, ...) -> i32; // user assumes responsibility of ensuring the correct number of arguments
 
 @repr(C)
