@@ -18,7 +18,29 @@
     reason = "unwanted"
 )]
 
-fn main() -> anyhow::Result<()> {
+use std::fs::File;
+
+use qu::ir::{Location, ModuleAnnotation, parse::Parse as _};
+
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt::init();
+
+    let tokens = qu::ir::parse::tokenizer::read_tokens(
+        &mut File::open("example.qir")?,
+        &Location {
+            line: Some(1),
+            column: Some(1),
+            index: Some(0),
+            file: Some("example.qir".into()),
+        },
+    )?;
+
+    let (annotation1, len1) = ModuleAnnotation::parse((), &tokens).unwrap();
+    println!("{annotation1:#?} (length {len1})");
+    let (annotation2, len2) = ModuleAnnotation::parse((), &tokens[len1..]).unwrap();
+    println!("{annotation2:#?} (length {len2})");
+    let (annotation3, len3) = ModuleAnnotation::parse((), &tokens[(len1 + len2)..]).unwrap();
+    println!("{annotation3:#?} (length {len3})");
+
     Ok(())
 }

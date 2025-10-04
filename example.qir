@@ -1,0 +1,71 @@
+@@quver("0.0.1")
+@@runtime_checks(array_bounds, underflow)
+@@check_violated(libc_exit(1))
+
+// extern functions are never mangled
+@extern(C,"exit")
+fn libc_exit(i32) -> !; // -> ! function returning is undefined behavior
+
+@extern(C,"printf")
+fn libc_printf(c_str, ...) -> i32; // user assumes responsibility of ensuring the correct number of arguments
+
+@repr(C)
+struct Test {
+    $field0: u8,
+    $field1: u16,
+    $field2: f32,
+    $length: uptr,
+    $field3: *[Test; $length],
+}
+
+@export(C, "main")
+fn main($argc: uptr, $argv: *[c_str; $argc]): &entry -> ! {
+    $v0: i32;
+    &entry {
+        $v0.1 = 0;
+        x86_64:intel [ ; Will be skipped over on other architectures.
+            ; Inline assembly
+            add eax, 8
+        ] (
+            $v0.1:eax,
+            eax:$v0.2,
+//          ebx:$_, // Specifies clobbered registers.
+            // Rust's
+        // https://doc.rust-lang.org/reference/inline-assembly.html#r-asm.options.supported-options
+            // tells about options. Check back here for actually supported ones though.
+            _opt:noflags, // _opt specifies parameters for the compiler. noflags means that the flags
+                          // aren't touched.
+//          _opt:noreturn,
+            _opt:pure,    // Pure means that it is completely deterministic and only depends on direct
+                          // inputs. See the Rust reference.
+            _opt:nomem,
+//          _opt:readonly,
+            _opt:nostack,
+        );
+        $v0.3 = (phi $v0.1, $v0.2);
+        $v1: u32;
+        $v1.0 = self.add($argc, 50);
+        $v1.1 = (% $v1.0, 50);
+        $v1.2 = (- 10, $v1.1);
+        _ = libc_printf(c"argc=%d", $v1.2);
+        $v2: uptr;
+        $v2.0 = 11;
+        _ = libc_printf(c"v2=%d", $v2.0);
+        (cmpbr $v1.2, eq, 9, &true, &end);
+    }
+    &true {
+        _ = libc_printf(c"one argument passed");
+        (jmp &end);
+    }
+    &end {
+        _ = libc_printf(c"v0=%d on x86_64 v0 should be 8 and on others should be 0", $v0.3);
+        libc_exit(0);
+    }
+}
+
+@hint(inline:always)
+fn add($a: u32, $b: u32) -> u32 {
+    $c: u32;
+    $c.0 = (+ $a, $b);
+    (ret $c.0)
+}
