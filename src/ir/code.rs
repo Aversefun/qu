@@ -62,6 +62,13 @@ pub enum ProdInstruction<'a> {
     /// Bitwise xor.
     Xor(Value<'a>, Value<'a>),
 
+    /// Access a property of the variable that is the first field.
+    FieldAccess(VarRef<'a>, Str<'a>),
+    /// Dereference a pointer.
+    DerefPtr(Value<'a>),
+    /// Create a pointer to a memory variable.
+    CreatePtr(Str<'a>),
+
     /// Returns the first variable that is not undefined.
     Phi(List<'a, VarRef<'a>>),
 

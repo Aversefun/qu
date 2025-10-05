@@ -14,14 +14,24 @@ struct Test {
     $field1: u16,
     $field2: f32,
     $length: uptr,
-    $field3: *[Test; $length],
+    $field3: *[Test; $length.0],
 }
 
 @export(C, "main")
-fn main($argc: uptr, $argv: *[c_str; $argc]): &entry -> ! {
+fn main($argc: uptr, $argv: *[c_str; $argc.0]) -> ! &entry {
     $v0: i32;
+    $m0: mem i32; // a value in memory (typed uptr)
+    $s0: Test;
     &entry {
         $v0.1 = 0;
+        $m0._ = 1; // very obvious that it's a memory address
+        $s0.0 = Test {
+            $field0: 0,
+            $field1: 0,
+            $field2: 0.0,
+            $length: 0,
+            $field3: &_, // special non-null address for zero size
+        };
         x86_64:intel [ ; Will be skipped over on other architectures.
             ; Inline assembly
             add eax, 8
@@ -51,15 +61,15 @@ fn main($argc: uptr, $argv: *[c_str; $argc]): &entry -> ! {
         $v2.0 = 11;
         _ = libc_printf(c"v2=%d", $v2.0);
         (cmpbr $v1.2, eq, 9, &true, &end);
-    }
+    };
     &true {
         _ = libc_printf(c"one argument passed");
         (jmp &end);
-    }
+    };
     &end {
         _ = libc_printf(c"v0=%d on x86_64 v0 should be 8 and on others should be 0", $v0.3);
         libc_exit(0);
-    }
+    };
 }
 
 @hint(inline:always)

@@ -1,7 +1,9 @@
 //! Tokenization of QIR.
 
 use crate::{
-    errors::IRTokenizerError, ir::{impl_is, impl_unwrap, Location}, Str
+    Str,
+    errors::IRTokenizerError,
+    ir::{Location, impl_is, impl_unwrap},
 };
 
 /// The type of a string literal.
@@ -20,6 +22,8 @@ pub struct Token<'a> {
     pub raw: RawToken<'a>,
     /// The location of this token.
     pub loc: Location<'a>,
+    /// The length of this token. Zero-based.
+    pub len: Location<'a>,
 }
 
 /// A single token.
@@ -70,7 +74,7 @@ pub enum RawToken<'a> {
     /// }
     CloseCurly,
     /// &
-    Block,
+    BlockOrRef,
     /// =
     Assign,
     /// The tokenizer does some special stuff to serialize everything after the start of an inline assembly block
@@ -88,6 +92,10 @@ pub enum RawToken<'a> {
     Property,
     /// Any whitespace character. Should never be produced by the tokenizer.
     Whitespace,
+    /// mem
+    Mem,
+    /// _
+    Drop,
 }
 
 impl<'a> RawToken<'a> {
@@ -95,11 +103,16 @@ impl<'a> RawToken<'a> {
     impl_unwrap!(RawToken, Str<'a>, RawToken::NumericLiteral, num_lit);
     impl_unwrap!(RawToken, Str<'a>, RawToken::StrLiteral, RawToken::StrLiteral (_, v) => v, str_lit);
     impl_unwrap!(RawToken, StrType, RawToken::StrLiteral, RawToken::StrLiteral (ty, _) => ty, str_lit_ty);
-    impl_unwrap!(RawToken, Str<'a>, RawToken::InlineAssemblyContents, inline_asm);
+    impl_unwrap!(
+        RawToken,
+        Str<'a>,
+        RawToken::InlineAssemblyContents,
+        inline_asm
+    );
 
     impl_is!(RawToken::ModuleAnnotation, module_annotation);
     impl_is!(RawToken::OpenParen, open_paren);
-    
+
     impl_is!(RawToken::CloseParen, close_paren);
     impl_is!(RawToken::Newline, newline);
     impl_is!(RawToken::Comma, comma);
@@ -117,7 +130,7 @@ impl<'a> RawToken<'a> {
     impl_is!(RawToken::Semicolon, semicolon);
     impl_is!(RawToken::CloseSquare, close_square);
     impl_is!(RawToken::CloseCurly, close_curly);
-    impl_is!(RawToken::Block, block);
+    impl_is!(RawToken::BlockOrRef, block);
     impl_is!(RawToken::Assign, assign);
 
     impl_is!(RawToken::Plus, plus);
@@ -125,6 +138,8 @@ impl<'a> RawToken<'a> {
     impl_is!(RawToken::Div, div);
     impl_is!(RawToken::Rem, rem);
     impl_is!(RawToken::Property, property);
+    impl_is!(RawToken::Mem, mem);
+    impl_is!(RawToken::Drop, drop);
 }
 
 /// A character stream used for turning into tokens
@@ -284,6 +299,9 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
             's' if chs[1..=5] == ['t', 'r', 'u', 'c', 't'] && chs[6].is_whitespace() => {
                 Ok((Some(RawToken::Struct), 6))
             }
+            'm' if chs[1..=2] == ['e', 'm'] && chs[3].is_whitespace() => {
+                Ok((Some(RawToken::Mem), 3))
+            }
             '{' => Ok((Some(RawToken::OpenCurly), 1)),
             '$' => Ok((Some(RawToken::Variable), 1)),
             ':' => Ok((Some(RawToken::Colon), 1)),
@@ -292,7 +310,7 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
             ';' => Ok((Some(RawToken::Semicolon), 1)),
             ']' => Ok((Some(RawToken::CloseSquare), 1)),
             '}' => Ok((Some(RawToken::CloseCurly), 1)),
-            '&' => Ok((Some(RawToken::Block), 1)),
+            '&' => Ok((Some(RawToken::BlockOrRef), 1)),
             '=' => Ok((Some(RawToken::Assign), 1)),
             '+' => Ok((Some(RawToken::Plus), 1)),
             '/' if chs[1] == '/' => {
@@ -313,6 +331,8 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
 
             'c' if chs[1] == '"' => Ok(parse_str_literal(&chs[2..], StrType::Normal)),
             '"' => Ok(parse_str_literal(&chs[1..], StrType::Normal)),
+
+            '_' if !chs[1].is_alphanumeric() && chs[1] != '_' => Ok((Some(RawToken::Drop), 1)),
 
             ch if ch.is_alphabetic() || ch == '_' => {
                 let mut out = String::new();
@@ -370,13 +390,17 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
 
         if let Some(token) = token
             && token != RawToken::Whitespace
-            && (token != RawToken::Newline
-                || (out.last().map(|v| &v.raw) != Some(&token)
-                    && out.last().map(|v| &v.raw) != Some(&RawToken::Comma)))
+            && token != RawToken::Newline
         {
             out.push(Token {
                 raw: token,
                 loc: tok_loc,
+                len: Location {
+                    line: None,
+                    column: Some(add),
+                    index: Some(add),
+                    file: loc.file.clone(),
+                },
             });
         }
     }

@@ -7,7 +7,10 @@
     clippy::ignore_without_reason,
     clippy::alloc_instead_of_core,
     clippy::as_underscore,
-    clippy::assertions_on_result_states
+    clippy::assertions_on_result_states,
+    clippy::panic,
+    clippy::unwrap_used,
+    clippy::missing_asserts_for_indexing
 )]
 #![allow(
     clippy::cast_possible_truncation,

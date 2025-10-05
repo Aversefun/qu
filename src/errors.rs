@@ -82,7 +82,7 @@ define_error! {
     }
     pub enum IRParserError {
         /// An invalid token was encountered when attempting to parse something.
-        InvalidToken(tok: RawToken<'a>, loc: Location<'a>, note: &'static str) = "unexpected token {tok:?} at {loc}: {note}",
+        UnexpectedToken(tok: RawToken<'a>, loc: Location<'a>, note: &'static str) = "unexpected token {tok:?} at {loc}: {note}",
         /// An error was encountered when parsing an integer literal.
         ParseIntError(err: ParseIntError, tok: RawToken<'a>, loc: Location<'a>) = "error parsing integer literal ({tok:?}) at {loc}: {err}",
         /// An error was encountered when parsing an float literal.
@@ -90,9 +90,11 @@ define_error! {
         /// An unexpected metadata value was passed.
         UnexpectedMetaValue(note: Str<'a>) = "unexpected metadata value: {note}",
         /// An invalid value in the token was passed.
-        InvalidValue(loc: Location<'a>, token_type: &'static str, note: Str<'a>) = "invalid {token_type} at {loc}: {note}",
+        UnexpectedValue(loc: Location<'a>, token_type: &'static str, note: Str<'a>) = "invalid {token_type} at {loc}: {note}",
         /// A generic std error.
         GenericError(loc: Location<'a>, token_type: &'static str, err: Box<dyn std::error::Error>) = "invalid {token_type} at {loc}: {err}",
+        /// An unexpectedly early EOF.
+        UnexpectedEOF(loc: Location<'a>, note: Str<'a>) = "unexpected EOF at {loc}: {note}"
     }
 }
 

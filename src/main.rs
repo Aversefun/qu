@@ -20,7 +20,7 @@
 
 use std::fs::File;
 
-use qu::ir::{parse::Parse as _, FunctionAnnotation, Location, ModuleAnnotation};
+use qu::ir::{ExternalFunctionSignature, Location, ModuleAnnotation, StructDef, parse::Parse as _};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt::init();
@@ -38,7 +38,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let (_, len1) = ModuleAnnotation::debug_output((), &tokens).unwrap();
     let (_, len2) = ModuleAnnotation::debug_output((), &tokens[len1..]).unwrap();
     let (_, len3) = ModuleAnnotation::debug_output((), &tokens[(len1 + len2)..]).unwrap();
-    let (_, len4) = FunctionAnnotation::debug_output((), &tokens[(len1 + len2 + len3)..]).unwrap();
+    let (_, len4) =
+        ExternalFunctionSignature::debug_output((), &tokens[(len1 + len2 + len3)..]).unwrap();
+    let (_, len5) =
+        ExternalFunctionSignature::debug_output((), &tokens[(len1 + len2 + len3 + len4)..])
+            .unwrap();
+    let (_, len6) =
+        StructDef::debug_output((), &tokens[(len1 + len2 + len3 + len4 + len5)..]).unwrap();
 
     Ok(())
 }

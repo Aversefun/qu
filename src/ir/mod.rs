@@ -1,5 +1,7 @@
 //! `QIR` parser.
 
+use std::ops::Add;
+
 use crate::{List, Str, Version, ir::code::Block, version};
 
 /// List of supported QUIR versions.
@@ -34,6 +36,18 @@ impl Location<'_> {
         self.column = Some(1);
         self.index = self.index.map(|v| v + i);
         self
+    }
+}
+
+impl Add for Location<'_> {
+    type Output = Self;
+    fn add(self, rhs: Self) -> Self::Output {
+        Self {
+            line: self.line.and_then(|v1| rhs.line.map(|v2| v1 + v2)),
+            column: self.column.and_then(|v1| rhs.column.map(|v2| v1 + v2)),
+            index: self.index.and_then(|v1| rhs.index.map(|v2| v1 + v2)),
+            file: self.file.or(rhs.file),
+        }
     }
 }
 
@@ -123,12 +137,11 @@ macro_rules! impl_unwrap {
                     _ => None,
                 }
             }
-
-            $crate::ir::impl_is!($(#[$attrs])* $p, $name);
         }
     };
     ($(#[$attrs:meta])* $parent:ty, $t:ty, $ty:path, $name:ident) => {
         impl_unwrap!($(#[$attrs])* $parent, $t, $ty, $ty (v) => v, $name);
+        $crate::ir::impl_is!($(#[$attrs])* $ty (v), $name);
     };
 }
 
@@ -182,7 +195,7 @@ impl<'a> ConstValue<'a> {
 }
 
 /// A primitive type.
-#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 #[allow(missing_docs, reason = "types are self-explanatory")]
 pub enum Primitive {
     U8,
@@ -244,6 +257,8 @@ pub enum Type<'a> {
     },
     /// A pointer.
     Pointer(Box<Type<'a>>),
+    /// A value in memory (.data or .bss sections).
+    Memory(Box<Type<'a>>),
 }
 
 impl<'a> Type<'a> {
@@ -276,14 +291,11 @@ pub enum RetType<'a> {
     Normal(Type<'a>),
     /// Never returns.
     Never,
-    /// No return value.
-    Void,
 }
 
 impl<'a> RetType<'a> {
     impl_unwrap!(RetType, Type<'a>, RetType::Normal, normal);
     impl_is!(RetType::Never, never);
-    impl_is!(RetType::Void, void);
 }
 
 /// A reference to a specific variable version.
@@ -291,8 +303,8 @@ impl<'a> RetType<'a> {
 pub struct VarRef<'a> {
     /// The variable name. Cannot be `_` as that is mapped to [`ExtendedVarRef::Drop`].
     pub name: Str<'a>,
-    /// The variable version.
-    pub version: u32,
+    /// The variable version. If None, means that it's a memory variable.
+    pub version: Option<u32>,
 }
 
 /// An extended variable reference. Used in assigning.
@@ -300,12 +312,17 @@ pub struct VarRef<'a> {
 pub enum ExtendedVarRef<'a> {
     /// A real variable.
     Real(VarRef<'a>),
+    /// A field of a struct.
+    Struct(VarRef<'a>, Str<'a>),
     /// Keyword to drop the variable.
     Drop,
 }
 
 impl<'a> ExtendedVarRef<'a> {
     impl_unwrap!(ExtendedVarRef, VarRef<'a>, ExtendedVarRef::Real, real);
+    impl_unwrap!(ExtendedVarRef, VarRef<'a>, ExtendedVarRef::Struct, ExtendedVarRef::Struct(v, _) => v.clone(), struct_ref);
+    impl_unwrap!(ExtendedVarRef, Str<'a>, ExtendedVarRef::Struct, ExtendedVarRef::Struct(_, v) => v.clone(), struct_field);
+    impl_is!(ExtendedVarRef::Struct(_, _), ty_struct);
     impl_is!(ExtendedVarRef::Drop, drop);
 }
 
@@ -315,14 +332,34 @@ pub enum Value<'a> {
     /// A constant value.
     Constant(ConstValue<'a>),
     /// A local variable.
-    Local(VarRef<'a>),
+    Variable(VarRef<'a>),
     /// The default value for untaken branches. Used in phi.
     Undef,
+    /// A struct literal.
+    StructLiteral {
+        name: Str<'a>,
+        fields: List<'a, (Str<'a>, Value<'a>)>,
+    },
 }
 
 impl<'a> Value<'a> {
     impl_unwrap!(Value, ConstValue<'a>, Value::Constant, constant);
-    impl_unwrap!(Value, VarRef<'a>, Value::Local, local);
+    impl_unwrap!(Value, VarRef<'a>, Value::Variable, local);
+    impl_unwrap!(
+        Value,
+        Str<'a>,
+        Value::StructLiteral,
+        Value::StructLiteral { name, fields: _ } => name,
+        struct_lit_name
+    );
+    impl_unwrap!(
+        Value,
+        List<'a, (Str<'a>, Value<'a>)>,
+        Value::StructLiteral,
+        Value::StructLiteral { name: _, fields } => fields,
+        struct_lit_fields
+    );
+    impl_is!(Value::StructLiteral { name: _, fields: _ }, struct_lit);
     impl_is!(Value::Undef, undef);
 }
 
@@ -426,17 +463,55 @@ pub enum FunctionAnnotation<'a> {
     Hint(List<'a, FunctionHint>),
 }
 
+impl<'a> FunctionAnnotation<'a> {
+    impl_unwrap!(
+        FunctionAnnotation,
+        (CallingConvention, Str<'a>),
+        FunctionAnnotation::Export,
+        FunctionAnnotation::Export(cc, s) => (cc, s),
+        export
+    );
+    impl_unwrap!(
+        FunctionAnnotation,
+        (CallingConvention, Str<'a>),
+        FunctionAnnotation::Extern,
+        FunctionAnnotation::Extern(cc, s) => (cc, s),
+        extern
+    );
+    impl_unwrap!(
+        FunctionAnnotation,
+        List<'a, FunctionHint>,
+        FunctionAnnotation::Hint,
+        hint
+    );
+}
+
 /// An internal function signature.
 #[derive(Clone, Debug, PartialEq)]
-pub struct FunctionSignature<'a> {
+pub struct InternalFunctionSignature<'a> {
     /// Annotations on the function.
     pub annotations: List<'a, FunctionAnnotation<'a>>,
     /// The name of the function.
     pub name: Str<'a>,
-    /// The parameters of the function.
-    pub params: List<'a, Type<'a>>,
+    /// The parameters of the function. String is the name of the parameter.
+    pub params: List<'a, (Str<'a>, Type<'a>)>,
     /// The result of the function.
-    pub result: RetType<'a>,
+    pub result: Option<RetType<'a>>,
+}
+
+/// An external function signature.
+#[derive(Clone, Debug, PartialEq)]
+pub struct ExternalFunctionSignature<'a> {
+    /// Annotations on the function.
+    pub annotations: List<'a, FunctionAnnotation<'a>>,
+    /// The name of the function.
+    pub name: Str<'a>,
+    /// The parameters of the function. String is the name of the parameter.
+    pub params: List<'a, Type<'a>>,
+    /// Whether the number of parameters is undefined.
+    pub params_continue: bool,
+    /// The result of the function.
+    pub result: Option<RetType<'a>>,
 }
 
 /// A function definition.
@@ -447,17 +522,15 @@ pub enum FunctionDef<'a> {
         /// The calling convention.
         calling_conv: CallingConvention,
         /// The internal function signature.
-        internal_sig: FunctionSignature<'a>,
-        /// Whether the function has an undefined number of arguments (e.g. printf).
-        undefined_arg_num: bool,
+        sig: ExternalFunctionSignature<'a>,
         /// The external name of the function.
         external_name: Str<'a>,
     },
     /// An internally defined function.
     Internal {
         /// The signature of the function.
-        sig: FunctionSignature<'a>,
-        /// Function-scoped variables. Includes parameters.
+        sig: InternalFunctionSignature<'a>,
+        /// Function-scoped variables.
         func_vars: List<'a, (Str<'a>, Type<'a>)>,
         /// The code of the function.
         code: List<'a, Block<'a>>,
