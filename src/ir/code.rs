@@ -1,31 +1,7 @@
 //! The code itself.
 
-use super::{ExtendedVarRef, FunctionCall, Type, Value, VarRef, impl_unwrap};
+use super::{ExtendedVarRef, FunctionCall, Type, Value, VarRef};
 use crate::{List, Str};
-
-/// A value-producing instruction or value.
-#[derive(Clone, Debug, PartialEq)]
-pub enum InstructionOrValue<'a> {
-    /// An instruction.
-    Instruction(ProdInstruction<'a>),
-    /// A value.
-    Value(Value<'a>),
-}
-
-impl<'a> InstructionOrValue<'a> {
-    impl_unwrap!(
-        InstructionOrValue,
-        ProdInstruction<'a>,
-        InstructionOrValue::Instruction,
-        instr
-    );
-    impl_unwrap!(
-        InstructionOrValue,
-        Value<'a>,
-        InstructionOrValue::Value,
-        value
-    );
-}
 
 /// A condition for a [`CmpBr`](NoProdInstruction::CmpBr).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -51,7 +27,7 @@ pub enum ProdInstruction<'a> {
     /// Division.
     Div(Value<'a>, Value<'a>),
     /// Remainder.
-    Mod(Value<'a>, Value<'a>),
+    Rem(Value<'a>, Value<'a>),
 
     /// Bitwise and.
     And(Value<'a>, Value<'a>),
@@ -62,8 +38,6 @@ pub enum ProdInstruction<'a> {
     /// Bitwise xor.
     Xor(Value<'a>, Value<'a>),
 
-    /// Access a property of the variable that is the first field.
-    FieldAccess(VarRef<'a>, Str<'a>),
     /// Dereference a pointer.
     DerefPtr(Value<'a>),
     /// Create a pointer to a memory variable.
@@ -74,6 +48,9 @@ pub enum ProdInstruction<'a> {
 
     /// A producing function call.
     Call(FunctionCall<'a>),
+
+    /// A value.
+    Value(Value<'a>),
 }
 
 /// Options provided to a inline assembly block.
@@ -83,6 +60,8 @@ pub enum AssemblyOption<'a> {
     CodegenSpecific(Str<'a>),
     /// This assembly doesn't return.
     NoReturn,
+    /// Flags are not used.
+    NoFlags,
     /// Pure means that it is completely deterministic and only depends on direct
     /// inputs. See the Rust reference.
     Pure,
@@ -96,7 +75,7 @@ pub enum AssemblyOption<'a> {
 
 /// A value for an inline assembly block.
 #[derive(Clone, Debug, PartialEq)]
-pub enum AssemblyValue<'a> {
+pub enum AssemblyOpt<'a> {
     /// Put the value from a variable into a register.
     VarToReg(VarRef<'a>, Str<'a>),
     /// Put the value from a register into a variable (or drop it and mark it as clobbered).
@@ -111,7 +90,13 @@ pub enum NoProdInstruction<'a> {
     /// A non-producing function call.
     Call(FunctionCall<'a>),
     /// A comparison with branch.
-    CmpBr(Value<'a>, Cond, Value<'a>, Str<'a>, Str<'a>),
+    CmpBr {
+        v0: Value<'a>,
+        cond: Cond,
+        v1: Value<'a>,
+        b_true: Str<'a>,
+        b_false: Str<'a>
+    },
     /// An unconditional jump.
     Jmp(Str<'a>),
     /// Inline assembly.
@@ -119,18 +104,18 @@ pub enum NoProdInstruction<'a> {
         /// The target to run this on.
         target: Str<'a>,
         /// The target options to provide.
-        target_opts: Str<'a>,
+        target_opts: Option<Str<'a>>,
         /// The assembly itself.
         asm: Str<'a>,
         /// The options.
-        values: List<'a, AssemblyValue<'a>>,
+        opts: List<'a, AssemblyOpt<'a>>,
     },
     /// A variable definition.
     VarDef(Str<'a>, Type<'a>),
     /// Assign a value to a variable.
-    Assign(ExtendedVarRef<'a>, InstructionOrValue<'a>),
+    Assign(ExtendedVarRef<'a>, ProdInstruction<'a>),
     /// Return a value.
-    Return(Value<'a>),
+    Return(Option<Value<'a>>),
 }
 
 /// A single block.

@@ -74,14 +74,18 @@ pub enum RawToken<'a> {
     /// }
     CloseCurly,
     /// &
-    BlockOrRef,
+    BlockRefOrAnd,
+    /// |
+    Or,
+    /// ^
+    Xor,
     /// =
     Assign,
     /// The tokenizer does some special stuff to serialize everything after the start of an inline assembly block
     /// into this.
     InlineAssemblyContents(Str<'a>),
     /// +
-    Plus,
+    Add,
     /// -
     Sub,
     /// /
@@ -130,10 +134,12 @@ impl<'a> RawToken<'a> {
     impl_is!(RawToken::Semicolon, semicolon);
     impl_is!(RawToken::CloseSquare, close_square);
     impl_is!(RawToken::CloseCurly, close_curly);
-    impl_is!(RawToken::BlockOrRef, block);
+    impl_is!(RawToken::BlockRefOrAnd, block);
+    impl_is!(RawToken::Or, or);
+    impl_is!(RawToken::Xor, xor);
     impl_is!(RawToken::Assign, assign);
 
-    impl_is!(RawToken::Plus, plus);
+    impl_is!(RawToken::Add, plus);
     impl_is!(RawToken::Sub, sub);
     impl_is!(RawToken::Div, div);
     impl_is!(RawToken::Rem, rem);
@@ -310,9 +316,9 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
             ';' => Ok((Some(RawToken::Semicolon), 1)),
             ']' => Ok((Some(RawToken::CloseSquare), 1)),
             '}' => Ok((Some(RawToken::CloseCurly), 1)),
-            '&' => Ok((Some(RawToken::BlockOrRef), 1)),
+            '&' => Ok((Some(RawToken::BlockRefOrAnd), 1)),
             '=' => Ok((Some(RawToken::Assign), 1)),
-            '+' => Ok((Some(RawToken::Plus), 1)),
+            '+' => Ok((Some(RawToken::Add), 1)),
             '/' if chs[1] == '/' => {
                 let mut len = 0usize;
                 for ch in chs {
@@ -325,6 +331,8 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
             }
             '/' => Ok((Some(RawToken::Div), 1)),
             '%' => Ok((Some(RawToken::Rem), 1)),
+            '|' => Ok((Some(RawToken::Or), 1)),
+            '^' => Ok((Some(RawToken::Xor), 1)),
             '-' if chs[1].is_ascii_digit() => parse_number::<T>(chs, loc.clone()),
             '-' => Ok((Some(RawToken::Sub), 1)),
             '0'..='9' => parse_number::<T>(chs, loc.clone()),

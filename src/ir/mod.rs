@@ -157,6 +157,8 @@ pub enum ConstValue<'a> {
     U64(u64),
     U128(u128),
     Uptr(u64),
+    /// Uptr value of &_
+    DropAddress,
 
     I8(i8),
     I16(i16),
@@ -179,6 +181,7 @@ impl<'a> ConstValue<'a> {
     impl_unwrap!(ConstValue, u64, ConstValue::U64, u64);
     impl_unwrap!(ConstValue, u128, ConstValue::U128, u128);
     impl_unwrap!(ConstValue, u64, ConstValue::Uptr, uptr);
+    impl_is!(ConstValue::DropAddress, drop_addr);
 
     impl_unwrap!(ConstValue, i8, ConstValue::I8, i8);
     impl_unwrap!(ConstValue, i16, ConstValue::I16, i16);
@@ -332,34 +335,14 @@ pub enum Value<'a> {
     /// A constant value.
     Constant(ConstValue<'a>),
     /// A local variable.
-    Variable(VarRef<'a>),
+    Variable(ExtendedVarRef<'a>),
     /// The default value for untaken branches. Used in phi.
     Undef,
-    /// A struct literal.
-    StructLiteral {
-        name: Str<'a>,
-        fields: List<'a, (Str<'a>, Value<'a>)>,
-    },
 }
 
 impl<'a> Value<'a> {
     impl_unwrap!(Value, ConstValue<'a>, Value::Constant, constant);
-    impl_unwrap!(Value, VarRef<'a>, Value::Variable, local);
-    impl_unwrap!(
-        Value,
-        Str<'a>,
-        Value::StructLiteral,
-        Value::StructLiteral { name, fields: _ } => name,
-        struct_lit_name
-    );
-    impl_unwrap!(
-        Value,
-        List<'a, (Str<'a>, Value<'a>)>,
-        Value::StructLiteral,
-        Value::StructLiteral { name: _, fields } => fields,
-        struct_lit_fields
-    );
-    impl_is!(Value::StructLiteral { name: _, fields: _ }, struct_lit);
+    impl_unwrap!(Value, ExtendedVarRef<'a>, Value::Variable, local);
     impl_is!(Value::Undef, undef);
 }
 

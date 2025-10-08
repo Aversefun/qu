@@ -25,13 +25,11 @@ fn main($argc: uptr, $argv: *[c_str; $argc.0]) -> ! &entry {
     &entry {
         $v0.1 = 0;
         $m0._ = 1; // very obvious that it's a memory address
-        $s0.0 = Test {
-            $field0: 0,
-            $field1: 0,
-            $field2: 0.0,
-            $length: 0,
-            $field3: &_, // special non-null address for zero size
-        };
+        $s0.0.field0 = 0; // default value of undef
+        $s0.0.field1 = 0; // can only set each field once per version
+        $s0.0.field2 = 0.0;
+        $s0.0.length = 0;
+        $s0.0.field3 = &_; // special address that is guarenteed to be non-null but shouldn't be dereferenced
         x86_64:intel [ ; Will be skipped over on other architectures.
             ; Inline assembly
             add eax, 8
@@ -51,12 +49,18 @@ fn main($argc: uptr, $argv: *[c_str; $argc.0]) -> ! &entry {
 //          _opt:readonly,
             _opt:nostack,
         );
+        x86_64:intel [ ; Inline assembly block without options
+            ; Inline assembly
+            nop
+        ] ();
         $v0.3 = (phi $v0.1, $v0.2);
         $v1: u32;
         $v1.0 = self.add($argc, 50);
         $v1.1 = (% $v1.0, 50);
         $v1.2 = (- 10, $v1.1);
+        //$v1.3 = !$v1.2; // Bitwise inversion
         _ = libc_printf(c"argc=%d", $v1.2);
+        no_return_function();
         $v2: uptr;
         $v2.0 = 11;
         _ = libc_printf(c"v2=%d", $v2.0);
@@ -72,9 +76,14 @@ fn main($argc: uptr, $argv: *[c_str; $argc.0]) -> ! &entry {
     };
 }
 
+fn no_return_function() {
+    _ = libc_printf(c"this is from no_return_function");
+    (ret);
+}
+
 @hint(inline:always)
 fn add($a: u32, $b: u32) -> u32 {
     $c: u32;
     $c.0 = (+ $a, $b);
-    (ret $c.0)
+    (ret $c.0);
 }
