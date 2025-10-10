@@ -306,7 +306,7 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
                 let mut out = String::new();
                 let mut i = 0usize;
                 while chs[i] != ']' {
-                    out.push(chs[0]);
+                    out.push(chs[i]);
                     i += 1;
                 }
                 return Ok((Some(RawToken::InlineAssemblyContents(out.into())), i.saturating_sub(1)));

@@ -1211,7 +1211,7 @@
     },
     Token {
         raw: InlineAssemblyContents(
-            "                                                                                                             ",
+            " ; Will be skipped over on other architectures.\n            ; Inline assembly\n            add eax, 8\n        ",
         ),
         loc: example.qir:33:23,
         len: example.qir at index 108,
@@ -1440,7 +1440,7 @@
     },
     Token {
         raw: InlineAssemblyContents(
-            "                                                                                               ",
+            " ; Inline assembly block without options\n            ; Inline assembly\n            nop\n        ",
         ),
         loc: example.qir:49:23,
         len: example.qir at index 94,

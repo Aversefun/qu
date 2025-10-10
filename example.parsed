@@ -331,7 +331,7 @@ Func(
                         target_opts: Some(
                             "intel",
                         ),
-                        asm: "                                                                                                             ",
+                        asm: " ; Will be skipped over on other architectures.\n            ; Inline assembly\n            add eax, 8\n        ",
                         opts: [
                             VarToReg(
                                 VarRef {
@@ -372,7 +372,7 @@ Func(
                         target_opts: Some(
                             "intel",
                         ),
-                        asm: "                                                                                               ",
+                        asm: " ; Inline assembly block without options\n            ; Inline assembly\n            nop\n        ",
                         opts: [],
                     },
                     Assign(
