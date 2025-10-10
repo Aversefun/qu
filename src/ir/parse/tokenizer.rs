@@ -298,14 +298,14 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
             ')' => Ok((Some(RawToken::CloseParen), 1)),
             '\n' => Ok((Some(RawToken::Newline), 1)),
             ',' => Ok((Some(RawToken::Comma), 1)),
-            'f' if chs[1] == 'n' && chs[2].is_whitespace() => Ok((Some(RawToken::Function), 2)),
-            '-' if chs[1] == '>' => Ok((Some(RawToken::Returns), 2)),
+            'f' if chs.len() >= 3 && chs[1] == 'n' && chs[2].is_whitespace() => Ok((Some(RawToken::Function), 2)),
+            '-' if chs.len() >= 2 && chs[1] == '>' => Ok((Some(RawToken::Returns), 2)),
             '!' => Ok((Some(RawToken::Bang), 1)),
-            '.' if chs[1..=2] == ['.', '.'] => Ok((Some(RawToken::Continues), 3)),
-            's' if chs[1..=5] == ['t', 'r', 'u', 'c', 't'] && chs[6].is_whitespace() => {
+            '.' if chs.len() >= 3 && chs[1..=2] == ['.', '.'] => Ok((Some(RawToken::Continues), 3)),
+            's' if chs.len() >= 6 && chs[1..=5] == ['t', 'r', 'u', 'c', 't'] && chs[6].is_whitespace() => {
                 Ok((Some(RawToken::Struct), 6))
             }
-            'm' if chs[1..=2] == ['e', 'm'] && chs[3].is_whitespace() => {
+            'm' if chs.len() >= 3 && chs[1..=2] == ['e', 'm'] && chs[3].is_whitespace() => {
                 Ok((Some(RawToken::Mem), 3))
             }
             '{' => Ok((Some(RawToken::OpenCurly), 1)),
@@ -319,7 +319,7 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
             '&' => Ok((Some(RawToken::BlockRefOrAnd), 1)),
             '=' => Ok((Some(RawToken::Assign), 1)),
             '+' => Ok((Some(RawToken::Add), 1)),
-            '/' if chs[1] == '/' => {
+            '/' if chs.len() >= 2 && chs[1] == '/' => {
                 let mut len = 0usize;
                 for ch in chs {
                     len += 1;
@@ -337,10 +337,10 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
             '-' => Ok((Some(RawToken::Sub), 1)),
             '0'..='9' => parse_number::<T>(chs, loc.clone()),
 
-            'c' if chs[1] == '"' => Ok(parse_str_literal(&chs[2..], StrType::Normal)),
-            '"' => Ok(parse_str_literal(&chs[1..], StrType::Normal)),
+            'c' if chs.len() >= 3 && chs[1] == '"' => Ok(parse_str_literal(&chs[2..], StrType::Normal)),
+            '"' if chs.len() >= 2 => Ok(parse_str_literal(&chs[1..], StrType::Normal)),
 
-            '_' if !chs[1].is_alphanumeric() && chs[1] != '_' => Ok((Some(RawToken::Drop), 1)),
+            '_' if chs.len() >= 2 && !chs[1].is_alphanumeric() && chs[1] != '_' => Ok((Some(RawToken::Drop), 1)),
 
             ch if ch.is_alphabetic() || ch == '_' => {
                 let mut out = String::new();

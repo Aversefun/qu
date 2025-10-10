@@ -11,7 +11,7 @@ pub mod code;
 pub mod parse;
 
 /// A location in a file.
-#[derive(Clone, PartialEq)]
+#[derive(Clone, PartialEq, Eq, Default, Hash)]
 pub struct Location<'a> {
     /// The line number.
     pub line: Option<usize>,
@@ -21,6 +21,18 @@ pub struct Location<'a> {
     pub index: Option<usize>,
     /// The file. If none, the formatter replaces it with "-".
     pub file: Option<Str<'a>>,
+}
+
+impl Ord for Location<'_> {
+    fn cmp(&self, other: &Self) -> std::cmp::Ordering {
+        self.index.cmp(&other.index)
+    }
+}
+
+impl PartialOrd for Location<'_> {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        Some(self.cmp(other))
+    }
 }
 
 impl Location<'_> {

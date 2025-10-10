@@ -44,7 +44,7 @@ pub enum ProdInstruction<'a> {
     CreatePtr(Str<'a>),
 
     /// Returns the first variable that is not undefined.
-    Phi(List<'a, VarRef<'a>>),
+    Phi(List<'a, ExtendedVarRef<'a>>),
 
     /// A producing function call.
     Call(FunctionCall<'a>),
@@ -91,10 +91,15 @@ pub enum NoProdInstruction<'a> {
     Call(FunctionCall<'a>),
     /// A comparison with branch.
     CmpBr {
+        /// The first value to compare.
         v0: Value<'a>,
+        /// The condition to use to compare.
         cond: Cond,
+        /// The second value to compare.
         v1: Value<'a>,
+        /// The block to jump to if true.
         b_true: Str<'a>,
+        /// The block to jump to if false.
         b_false: Str<'a>
     },
     /// An unconditional jump.

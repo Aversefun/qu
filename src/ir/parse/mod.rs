@@ -5,12 +5,9 @@ use super::{
     FunctionCall, FunctionDef, FunctionHint, InternalFunctionSignature, ModuleAnnotation,
     Primitive, RetType, RuntimeCheck, Str, StructAnnotation, StructDef, Type, Value, VarRef,
     Version,
-    code::{
-        AssemblyOpt, AssemblyOption, Block, Cond, NoProdInstruction,
-        ProdInstruction,
-    },
+    code::{AssemblyOpt, AssemblyOption, Block, Cond, NoProdInstruction, ProdInstruction},
 };
-use crate::errors::IRParserError;
+use crate::{errors::IRParserError, ir::ModuleItem};
 use tokenizer::{RawToken, StrType, Token};
 
 pub mod tokenizer;
@@ -487,6 +484,16 @@ impl<'a> Parse<'a> for Str<'a> {
 impl<'a> Parse<'a> for VarRef<'a> {
     type Meta = ();
     fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
+        if input.len() <= 3 {
+            return Err(IRParserError::UnexpectedEOF(
+                input
+                    .last()
+                    .map(|v| v.loc.clone() + v.len.clone())
+                    .unwrap_or_default(),
+                "expected tokens for a variable".into(),
+            ));
+        }
+        assert!(input.len() > 3); // unnecessary but clippy is unaware
         expect_token!(input[0], RawToken::Variable);
         let version = if let RawToken::NumericLiteral(version) = &input[3].raw {
             Some(version.parse().map_err(|e| {
@@ -513,6 +520,16 @@ impl<'a> Parse<'a> for VarRef<'a> {
 impl<'a> Parse<'a> for Value<'a> {
     type Meta = ();
     fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
+        if input.len() <= 2 {
+            return Err(IRParserError::UnexpectedEOF(
+                input
+                    .last()
+                    .map(|v| v.loc.clone() + v.len.clone())
+                    .unwrap_or_default(),
+                "expected tokens for a value".into(),
+            ));
+        }
+        assert!(input.len() > 2); // unnecessary but clippy is unaware
         if input[0].raw == RawToken::Variable && input[2].raw == RawToken::Property {
             ExtendedVarRef::parse((), input).map(|v| (Self::Variable(v.0), v.1))
         } else if let Ok(val) = ConstValue::parse(None, input) {
@@ -556,6 +573,16 @@ impl<'a> Parse<'a> for FunctionCall<'a> {
 impl<'a> Parse<'a> for ModuleAnnotation<'a> {
     type Meta = ();
     fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
+        if input.len() <= 4 {
+            return Err(IRParserError::UnexpectedEOF(
+                input
+                    .last()
+                    .map(|v| v.loc.clone() + v.len.clone())
+                    .unwrap_or_default(),
+                "expected tokens for a module annotation".into(),
+            ));
+        }
+        assert!(input.len() > 4); // unnecessary but clippy is unaware
         expect_token!(input[0], RawToken::ModuleAnnotation);
         expect_token!(input[2], RawToken::OpenParen);
         if let RawToken::Ident(name) = &input[1].raw {
@@ -632,6 +659,16 @@ impl<'a> Parse<'a> for CallingConvention {
 impl<'a> Parse<'a> for FunctionHint {
     type Meta = ();
     fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
+        if input.len() <= 2 {
+            return Err(IRParserError::UnexpectedEOF(
+                input
+                    .last()
+                    .map(|v| v.loc.clone() + v.len.clone())
+                    .unwrap_or_default(),
+                "expected tokens for a function hint".into(),
+            ));
+        }
+        assert!(input.len() > 2); // unnecessary but clippy is unaware
         if let RawToken::Ident(name) = &input[0].raw {
             match name.as_ref().to_lowercase().as_str() {
                 "inline" => {
@@ -669,6 +706,16 @@ impl<'a> Parse<'a> for FunctionHint {
 impl<'a> Parse<'a> for FunctionAnnotation<'a> {
     type Meta = ();
     fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
+        if input.len() <= 3 {
+            return Err(IRParserError::UnexpectedEOF(
+                input
+                    .last()
+                    .map(|v| v.loc.clone() + v.len.clone())
+                    .unwrap_or_default(),
+                "expected tokens for a function annotation".into(),
+            ));
+        }
+        assert!(input.len() > 3); // unnecessary but clippy is unaware
         expect_token!(input[0], RawToken::ItemAnnotation);
         if let RawToken::Ident(name) = &input[1].raw {
             let name = name.as_ref().to_lowercase();
@@ -705,6 +752,7 @@ impl<'a> Parse<'a> for FunctionAnnotation<'a> {
                     }
 
                     Ok((
+                        #[allow(clippy::unwrap_used, reason = "checked ^^^")]
                         if name == "export" {
                             Self::Export(calling_convention.unwrap(), exported_name.unwrap())
                         } else {
@@ -760,7 +808,7 @@ impl<'a> Parse<'a> for Type<'a> {
             }
             RawToken::OpenSquare => {
                 let (ty, len) = Self::parse((), &input[1..])?;
-                expect_token!(input[len + 1], RawToken::Semicolon);
+                expect_token!(input[len], RawToken::Semicolon);
                 let (arr_len, len2) = Value::parse((), &input[(len + 2)..])?;
                 expect_token!(input[len + len2 + 2], RawToken::CloseSquare);
 
@@ -922,6 +970,16 @@ impl<'a> Parse<'a> for ExternalFunctionSignature<'a> {
 impl<'a> Parse<'a> for StructAnnotation {
     type Meta = ();
     fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
+        if input.len() <= 3 {
+            return Err(IRParserError::UnexpectedEOF(
+                input
+                    .last()
+                    .map(|v| v.loc.clone() + v.len.clone())
+                    .unwrap_or_default(),
+                "expected tokens for a struct annotation".into(),
+            ));
+        }
+        assert!(input.len() > 3); // unnecessary but clippy is unaware
         expect_token!(input[0], RawToken::ItemAnnotation);
         if let RawToken::Ident(name) = &input[1].raw {
             let name = name.as_ref().to_lowercase();
@@ -960,6 +1018,7 @@ impl<'a> Parse<'a> for StructAnnotation {
 
                     Ok((
                         Self::Repr {
+                            #[allow(clippy::unwrap_used, reason = "checked above ^^^")]
                             cc: calling_convention.unwrap(),
                             packed,
                         },
@@ -1054,6 +1113,16 @@ impl<'a> Parse<'a> for ExtendedVarRef<'a> {
 impl<'a> Parse<'a> for AssemblyOpt<'a> {
     type Meta = ();
     fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
+        if input.len() <= 2 {
+            return Err(IRParserError::UnexpectedEOF(
+                input
+                    .last()
+                    .map(|v| v.loc.clone() + v.len.clone())
+                    .unwrap_or_default(),
+                "expected tokens for an inline assembly option".into(),
+            ));
+        }
+        assert!(input.len() > 2); // unnecessary but clippy is unaware
         match &input[0].raw {
             RawToken::Variable => {
                 let (vref, len) = VarRef::parse((), input)?;
@@ -1122,12 +1191,23 @@ impl<'a> Parse<'a> for Cond {
 impl<'a> Parse<'a> for ProdInstruction<'a> {
     type Meta = ();
     fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
+        if input.len() <= 1 {
+            return Err(IRParserError::UnexpectedEOF(
+                input
+                    .last()
+                    .map(|v| v.loc.clone() + v.len.clone())
+                    .unwrap_or_default(),
+                "expected tokens for a producing instruction".into(),
+            ));
+        }
+        assert!(input.len() > 1); // unnecessary but clippy is unaware
         let value = Value::parse((), input);
         match &input[0].raw {
             _ if value.is_ok() => {
+                #[allow(clippy::unwrap_used, reason = "checked above ^^^")]
                 let val = value.unwrap();
                 Ok((Self::Value(val.0), val.1))
-            },
+            }
             RawToken::Ident(v) => {
                 let (params, len) = parse_separated! {
                     &input[1..] => Value {
@@ -1141,14 +1221,15 @@ impl<'a> Parse<'a> for ProdInstruction<'a> {
                     }),
                     len + 1,
                 ))
-            },
+            }
             RawToken::OpenParen => {
                 if input[1].raw == RawToken::Ident("phi".into()) {
                     let (variables, len) = parse_separated! {
-                        &input[2..] => ExtendedVarRef {
+                        (_, RawToken::Comma, RawToken::CloseParen): &input[2..] => ExtendedVarRef {
                             RawToken::Variable => "variable reference"
                         }
                     }?;
+                    return Ok((Self::Phi(variables.into()), len + 2));
                 }
                 let mut i = 2usize;
                 let (v0, len) = Value::parse((), &input[i..])?;
@@ -1163,18 +1244,39 @@ impl<'a> Parse<'a> for ProdInstruction<'a> {
                 expect_token!(input[i], RawToken::CloseParen);
                 i += 1;
 
-                Ok((match &input[1].raw {
-                    RawToken::Add => Self::Add(v0, v1),
-                    RawToken::Sub => Self::Sub(v0, v1),
-                    RawToken::PointerOrMul => Self::Mul(v0, v1),
-                    RawToken::Div => Self::Div(v0, v1),
-                    RawToken::Rem => Self::Rem(v0, v1),
+                Ok((
+                    match &input[1].raw {
+                        RawToken::Add => Self::Add(v0, v1),
+                        RawToken::Sub => Self::Sub(v0, v1),
+                        RawToken::PointerOrMul => Self::Mul(v0, v1),
+                        RawToken::Div => Self::Div(v0, v1),
+                        RawToken::Rem => Self::Rem(v0, v1),
 
-                    RawToken::BlockRefOrAnd => Self::And(v0, v1),
-                    RawToken::Or => Self::Or(v0, v1),
-                    RawToken::Xor => Self::Xor(v0, v1),
-                }, i))
+                        RawToken::BlockRefOrAnd => Self::And(v0, v1),
+                        RawToken::Or => Self::Or(v0, v1),
+                        RawToken::Xor => Self::Xor(v0, v1),
+                        _ => bail!(UnexpectedToken(
+                            input[1].clone(),
+                            "invalid built-in operation"
+                        )),
+                    },
+                    i,
+                ))
             }
+            RawToken::PointerOrMul => {
+                let (val, len) = Value::parse((), &input[1..])?;
+
+                Ok((Self::DerefPtr(val), len + 1))
+            }
+            RawToken::BlockRefOrAnd => {
+                let (var, len) = Str::parse((), &input[1..])?;
+
+                Ok((Self::CreatePtr(var), len + 1))
+            }
+            _ => bail!(UnexpectedToken(
+                input[0].clone(),
+                "expected a producing instruction"
+            )),
         }
     }
 }
@@ -1182,6 +1284,16 @@ impl<'a> Parse<'a> for ProdInstruction<'a> {
 impl<'a> Parse<'a> for NoProdInstruction<'a> {
     type Meta = ();
     fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
+        if input.len() <= 4 {
+            return Err(IRParserError::UnexpectedEOF(
+                input
+                    .last()
+                    .map(|v| v.loc.clone() + v.len.clone())
+                    .unwrap_or_default(),
+                "expected tokens for a non-producing instruction".into(),
+            ));
+        }
+        assert!(input.len() > 4); // unnecessary but clippy is unaware
         match &input[0].raw {
             RawToken::Variable => {
                 if input[2].raw.is_property() {
@@ -1319,12 +1431,11 @@ impl<'a> Parse<'a> for NoProdInstruction<'a> {
                         Ok((Self::Jmp(input[3].raw.clone().unwrap_ident()), 5))
                     }
                     "ret" => {
-                        let val = match &input[2].raw {
-                            RawToken::CloseParen => (None, 1usize),
-                            _ => {
-                                let (val, len) = Value::parse((), &input[2..])?;
-                                (Some(val), len + 1)
-                            }
+                        let val = if input[2].raw == RawToken::CloseParen {
+                            (None, 1usize)
+                        } else {
+                            let (val, len) = Value::parse((), &input[2..])?;
+                            (Some(val), len + 1)
                         };
                         Ok((Self::Return(val.0), val.1 + 1))
                     }
@@ -1391,9 +1502,7 @@ impl<'a> Parse<'a> for FunctionDef<'a> {
         }
         i += len;
 
-        let entry = if let RawToken::Ident(block) = input[i].raw.clone() {
-            block
-        } else {
+        let RawToken::Ident(entry) = input[i].raw.clone() else {
             bail!(UnexpectedToken(input[i], "expected entry block"));
         };
         i += 1;
@@ -1445,5 +1554,19 @@ impl<'a> Parse<'a> for FunctionDef<'a> {
             },
             i,
         ))
+    }
+}
+
+impl<'a> Parse<'a> for ModuleItem<'a> {
+    type Meta = ();
+    fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
+        Ok(if let Ok(v) = ModuleAnnotation::parse((), input) {
+            (Self::ModuleAnnotation(v.0), v.1)
+        } else if let Ok(v) = StructDef::parse((), input) {
+            (Self::StructDef(v.0), v.1)
+        } else {
+            let v = FunctionDef::parse((), input)?;
+            (Self::Func(v.0), v.1)
+        })
     }
 }
