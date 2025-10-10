@@ -9,6 +9,7 @@ pub const SUPPORTED_QUIR_VERSIONS: &[Version<'_>] = &[version!(0, 1, 0)];
 
 pub mod code;
 pub mod parse;
+pub mod owned;
 
 /// A location in a file.
 #[derive(Clone, PartialEq, Eq, Default, Hash)]
@@ -592,7 +593,7 @@ pub struct StructDef<'a> {
     /// The name of the struct.
     pub name: Str<'a>,
     /// The fields of the struct.
-    pub fields: List<'a, (Str<'a>, Box<Type<'a>>)>,
+    pub fields: List<'a, (Str<'a>, Type<'a>)>,
 }
 
 impl_ir_item!(StructDef<'_>);

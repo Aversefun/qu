@@ -299,7 +299,7 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
             } else {
                 &hist[hist.len().saturating_sub(2)..]
             };
-            let is_asm = matches!(&asm_id_slice[0].raw, RawToken::Ident(v) if crate::TARGETS.contains(&v.as_ref()))
+            let is_asm = matches!(&asm_id_slice[0].raw, RawToken::Ident(v) if crate::ARCHS.contains(&v.as_ref()))
                 && hist.len() >= 3
                 && hist.last().unwrap().raw == RawToken::OpenSquare;
             if is_asm {

@@ -1319,7 +1319,7 @@ impl<'a> Parse<'a> for NoProdInstruction<'a> {
                 }
             }
             RawToken::Ident(v) => {
-                if crate::TARGETS.contains(&v.as_ref())
+                if crate::ARCHS.contains(&v.as_ref())
                     && (input[1].raw.is_colon() || input[1].raw.is_open_square())
                 {
                     // inline assembly

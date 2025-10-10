@@ -23,9 +23,15 @@
 )]
 #![feature(trim_prefix_suffix)]
 #![feature(phantom_variance_markers)]
+#![feature(mpmc_channel)]
+#![feature(more_qualified_paths)]
 
-use std::{borrow::Cow, str::FromStr};
+use std::{
+    borrow::Cow,
+    str::FromStr,
+};
 
+pub mod codegen;
 pub mod errors;
 pub mod ir;
 pub mod transformers;
@@ -37,8 +43,11 @@ pub type Str<'a> = Cow<'a, str>;
 /// A type alias for CoW lists.
 pub type List<'a, T> = Cow<'a, [T]>;
 
+/// Supported architectures.
+pub const ARCHS: &[&str] = &["x86_64"];
+
 /// Supported targets.
-pub const TARGETS: &[&str] = &["x86_64"];
+pub const TARGETS: &[&str] = &["x86_64-linux"];
 
 /// A semver-style version.
 #[derive(Clone, Debug, Default, PartialOrd, Ord, Hash)]
@@ -56,6 +65,50 @@ pub struct Version<'a> {
     pub prerelease: Option<Str<'a>>,
     /// The build metadata. If it exists, then it enforces strict equality.
     pub build: Option<Str<'a>>,
+}
+
+impl Into<OwnedVersion> for Version<'_> {
+    fn into(self) -> OwnedVersion {
+        OwnedVersion {
+            strict: self.strict,
+            major: self.major,
+            minor: self.minor,
+            patch: self.patch,
+            prerelease: self.prerelease.clone().map(|v| v.into_owned()),
+            build: self.build.clone().map(|v| v.into_owned()),
+        }
+    }
+}
+
+/// A semver-style version.
+#[derive(Clone, Debug, Default, PartialOrd, Ord, Hash)]
+#[must_use]
+pub struct OwnedVersion {
+    /// Specifies strict equality. If unsure, set to false.
+    pub strict: bool,
+    /// The major component.
+    pub major: u16,
+    /// The minor component.
+    pub minor: u16,
+    /// The patch component.
+    pub patch: u16,
+    /// The prerelease metadata.
+    pub prerelease: Option<String>,
+    /// The build metadata. If it exists, then it enforces strict equality.
+    pub build: Option<String>,
+}
+
+impl Eq for OwnedVersion {}
+
+impl PartialEq for OwnedVersion {
+    fn eq(&self, other: &Self) -> bool {
+        // ignores OwnedVersion::strict
+        self.major == other.major
+            && self.minor == other.minor
+            && self.patch == other.patch
+            && self.prerelease == other.prerelease
+            && self.build == other.build
+    }
 }
 
 /// Convinence macro for defining a [`Version`].

@@ -98,7 +98,15 @@ define_error! {
     }
     pub enum TransformerError {
         /// A generic std error.
-        GenericError(loc: Location<'a>, ty: &'static str, err: Box<dyn std::error::Error>) = "invalid {ty} at {loc}: {err}"
+        GenericError(loc: Location<'a>, ty: &'static str, err: Box<dyn std::error::Error>) = "invalid {ty} at {loc}: {err}",
+    }
+    pub enum CodegenError {
+        /// Returned if there are zero codegen units specified.
+        ZeroCodegenUnits = "zero codegen units specified",
+        /// A generic std error.
+        GenericError(loc: Str<'a>, err: Box<dyn std::error::Error>) = "codegen error at {loc}: {err}",
+        /// Returned if this codegen cannot compile to assembly.
+        CannotCompileToAsm = "cannot compile to assembly"
     }
 }
 
