@@ -96,6 +96,10 @@ define_error! {
         /// An unexpectedly early EOF.
         UnexpectedEOF(loc: Location<'a>, note: Str<'a>) = "unexpected EOF at {loc}: {note}"
     }
+    pub enum TransformerError {
+        /// A generic std error.
+        GenericError(loc: Location<'a>, ty: &'static str, err: Box<dyn std::error::Error>) = "invalid {ty} at {loc}: {err}"
+    }
 }
 
 impl<E: Error> From<E> for IRTokenizerError<'_, E> {

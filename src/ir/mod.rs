@@ -159,6 +159,24 @@ macro_rules! impl_unwrap {
 
 pub(crate) use impl_unwrap;
 
+/// A private trait implemented for all IR items.
+pub(crate) trait ClosedIRItem {}
+
+/// A trait implemented for all IR items that can be transformed.
+/// See the [`Transformer`](crate::transformers::Transformer) trait.
+#[expect(private_bounds, reason = "intended behavior")]
+pub trait IRItem: ClosedIRItem {}
+
+/// Easily implement [`IRItem`] and [`ClosedIRItem`] for something.
+macro_rules! impl_ir_item {
+    ($ty:ty) => {
+        impl crate::ir::ClosedIRItem for $ty {}
+        impl crate::ir::IRItem for $ty {}
+    };
+}
+
+pub(crate) use impl_ir_item;
+
 /// A constant value.
 #[derive(Clone, Debug, PartialEq)]
 #[allow(missing_docs, reason = "types are self explanatory")]
@@ -185,6 +203,8 @@ pub enum ConstValue<'a> {
     CString(Str<'a>),
     String(Str<'a>),
 }
+
+impl_ir_item!(ConstValue<'_>);
 
 impl<'a> ConstValue<'a> {
     impl_unwrap!(ConstValue, u8, ConstValue::U8, u8);
@@ -234,6 +254,8 @@ pub enum Primitive {
     String,
 }
 
+impl_ir_item!(Primitive);
+
 impl Primitive {
     impl_is!(Primitive::U8, u8);
     impl_is!(Primitive::U16, u16);
@@ -276,6 +298,8 @@ pub enum Type<'a> {
     Memory(Box<Type<'a>>),
 }
 
+impl_ir_item!(Type<'_>);
+
 impl<'a> Type<'a> {
     impl_unwrap!(
         /// Why is this named `ty_primitive` and not just `primitive`? Because this and `ty_struct` are
@@ -308,6 +332,8 @@ pub enum RetType<'a> {
     Never,
 }
 
+impl_ir_item!(RetType<'_>);
+
 impl<'a> RetType<'a> {
     impl_unwrap!(RetType, Type<'a>, RetType::Normal, normal);
     impl_is!(RetType::Never, never);
@@ -322,6 +348,8 @@ pub struct VarRef<'a> {
     pub version: Option<u32>,
 }
 
+impl_ir_item!(VarRef<'_>);
+
 /// An extended variable reference. Used in assigning.
 #[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum ExtendedVarRef<'a> {
@@ -332,6 +360,8 @@ pub enum ExtendedVarRef<'a> {
     /// Keyword to drop the variable.
     Drop,
 }
+
+impl_ir_item!(ExtendedVarRef<'_>);
 
 impl<'a> ExtendedVarRef<'a> {
     impl_unwrap!(ExtendedVarRef, VarRef<'a>, ExtendedVarRef::Real, real);
@@ -352,6 +382,8 @@ pub enum Value<'a> {
     Undef,
 }
 
+impl_ir_item!(Value<'_>);
+
 impl<'a> Value<'a> {
     impl_unwrap!(Value, ConstValue<'a>, Value::Constant, constant);
     impl_unwrap!(Value, ExtendedVarRef<'a>, Value::Variable, local);
@@ -366,6 +398,8 @@ pub struct FunctionCall<'a> {
     /// The arguments.
     pub args: List<'a, Value<'a>>,
 }
+
+impl_ir_item!(FunctionCall<'_>);
 
 /// Runtime checks that can be enabled in a QIR file. If conditions are violated,
 /// then `check_violated` will be ran.
@@ -401,6 +435,8 @@ pub enum ModuleAnnotation<'a> {
     /// The function(s) to call when a runtime check is violated.
     CheckViolated(List<'a, FunctionCall<'a>>),
 }
+
+impl_ir_item!(ModuleAnnotation<'_>);
 
 impl<'a> ModuleAnnotation<'a> {
     impl_unwrap!(
@@ -534,6 +570,8 @@ pub enum FunctionDef<'a> {
     },
 }
 
+impl_ir_item!(FunctionDef<'_>);
+
 /// A struct annotation.
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub enum StructAnnotation {
@@ -556,6 +594,8 @@ pub struct StructDef<'a> {
     /// The fields of the struct.
     pub fields: List<'a, (Str<'a>, Box<Type<'a>>)>,
 }
+
+impl_ir_item!(StructDef<'_>);
 
 /// A single module-level item in QIR.
 #[derive(Clone, Debug, PartialEq)]

@@ -1,7 +1,8 @@
 //! The code itself.
 
-use super::{ExtendedVarRef, FunctionCall, Type, Value, VarRef};
+use super::{ExtendedVarRef, FunctionCall, Type, Value, VarRef, impl_ir_item};
 use crate::{List, Str};
+
 
 /// A condition for a [`CmpBr`](NoProdInstruction::CmpBr).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -14,6 +15,8 @@ pub enum Cond {
     GreaterThan,
     GreaterEqual,
 }
+
+impl_ir_item!(Cond);
 
 /// Instructions that do produce a value.
 #[derive(Clone, Debug, PartialEq)]
@@ -52,6 +55,8 @@ pub enum ProdInstruction<'a> {
     /// A value.
     Value(Value<'a>),
 }
+
+impl_ir_item!(ProdInstruction<'_>);
 
 /// Options provided to a inline assembly block.
 #[derive(Clone, Debug, PartialEq)]
@@ -123,6 +128,8 @@ pub enum NoProdInstruction<'a> {
     Return(Option<Value<'a>>),
 }
 
+impl_ir_item!(NoProdInstruction<'_>);
+
 /// A single block.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Block<'a> {
@@ -131,3 +138,5 @@ pub struct Block<'a> {
     /// The instructions.
     pub instructions: List<'a, NoProdInstruction<'a>>,
 }
+
+impl_ir_item!(Block<'_>);

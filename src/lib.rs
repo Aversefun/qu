@@ -28,6 +28,7 @@ use std::{borrow::Cow, str::FromStr};
 
 pub mod errors;
 pub mod ir;
+pub mod transformers;
 
 #[expect(clippy::doc_markdown, reason = "CoW is not an item")]
 /// A type alias for CoW strings.
