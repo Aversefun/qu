@@ -18,9 +18,9 @@
     reason = "unwanted"
 )]
 
-use std::fs::File;
+use std::{fmt::Write as _, fs::File};
 
-use qu::ir::{parse::Parse as _, Location, ModuleItem};
+use qu::ir::{Location, ModuleItem, parse::Parse as _};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     tracing_subscriber::fmt::init();
@@ -39,10 +39,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let mut i = 0usize;
 
+    let mut parsed_str = String::new();
+
     while i < tokens.len() {
-        let (_, len) = ModuleItem::debug_output((), &tokens[i..]).unwrap();
+        let (v, len) = ModuleItem::debug_output((), &tokens[i..]).unwrap();
+        writeln!(parsed_str, "{v:#?}")?;
         i += len;
     }
+
+    std::fs::write("example.parsed", parsed_str)?;
 
     Ok(())
 }

@@ -257,6 +257,10 @@ fn parse_number<'a, T: 'a + ReadChar>(
             }
         }
     }
+    if out.ends_with('.') {
+        out.pop();
+        len -= 1;
+    }
     Ok((Some(RawToken::NumericLiteral(out.into())), len))
 }
 
@@ -289,6 +293,25 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
         hist: &[Token<'a>],
         loc: &Location<'a>,
     ) -> Result<(Option<RawToken<'a>>, usize), IRTokenizerError<'a, <T as ReadChar>::Error>> {
+        if hist.len() >= 2 {
+            let asm_id_slice = if hist[hist.len().saturating_sub(3)].raw == RawToken::Colon {
+                &hist[hist.len().saturating_sub(4)..]
+            } else {
+                &hist[hist.len().saturating_sub(2)..]
+            };
+            let is_asm = matches!(&asm_id_slice[0].raw, RawToken::Ident(v) if crate::TARGETS.contains(&v.as_ref()))
+                && hist.len() >= 3
+                && hist.last().unwrap().raw == RawToken::OpenSquare;
+            if is_asm {
+                let mut out = String::new();
+                let mut i = 0usize;
+                while chs[i] != ']' {
+                    out.push(chs[0]);
+                    i += 1;
+                }
+                return Ok((Some(RawToken::InlineAssemblyContents(out.into())), i.saturating_sub(1)));
+            }
+        }
         match chs[0] {
             '@' => match chs[1] {
                 '@' => Ok((Some(RawToken::ModuleAnnotation), 2)),
@@ -298,11 +321,16 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
             ')' => Ok((Some(RawToken::CloseParen), 1)),
             '\n' => Ok((Some(RawToken::Newline), 1)),
             ',' => Ok((Some(RawToken::Comma), 1)),
-            'f' if chs.len() >= 3 && chs[1] == 'n' && chs[2].is_whitespace() => Ok((Some(RawToken::Function), 2)),
+            'f' if chs.len() >= 3 && chs[1] == 'n' && chs[2].is_whitespace() => {
+                Ok((Some(RawToken::Function), 2))
+            }
             '-' if chs.len() >= 2 && chs[1] == '>' => Ok((Some(RawToken::Returns), 2)),
             '!' => Ok((Some(RawToken::Bang), 1)),
             '.' if chs.len() >= 3 && chs[1..=2] == ['.', '.'] => Ok((Some(RawToken::Continues), 3)),
-            's' if chs.len() >= 6 && chs[1..=5] == ['t', 'r', 'u', 'c', 't'] && chs[6].is_whitespace() => {
+            's' if chs.len() >= 6
+                && chs[1..=5] == ['t', 'r', 'u', 'c', 't']
+                && chs[6].is_whitespace() =>
+            {
                 Ok((Some(RawToken::Struct), 6))
             }
             'm' if chs.len() >= 3 && chs[1..=2] == ['e', 'm'] && chs[3].is_whitespace() => {
@@ -337,10 +365,14 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
             '-' => Ok((Some(RawToken::Sub), 1)),
             '0'..='9' => parse_number::<T>(chs, loc.clone()),
 
-            'c' if chs.len() >= 3 && chs[1] == '"' => Ok(parse_str_literal(&chs[2..], StrType::Normal)),
+            'c' if chs.len() >= 3 && chs[1] == '"' => {
+                Ok(parse_str_literal(&chs[2..], StrType::C))
+            }
             '"' if chs.len() >= 2 => Ok(parse_str_literal(&chs[1..], StrType::Normal)),
 
-            '_' if chs.len() >= 2 && !chs[1].is_alphanumeric() && chs[1] != '_' => Ok((Some(RawToken::Drop), 1)),
+            '_' if chs.len() >= 2 && !chs[1].is_alphanumeric() && chs[1] != '_' => {
+                Ok((Some(RawToken::Drop), 1))
+            }
 
             ch if ch.is_alphabetic() || ch == '_' => {
                 let mut out = String::new();
@@ -352,23 +384,11 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
                         _ => break,
                     }
                 }
-                let asm_id_slice = if hist[hist.len().saturating_sub(3)].raw == RawToken::Colon {
-                    &hist[hist.len().saturating_sub(4)..]
-                } else {
-                    &hist[hist.len().saturating_sub(2)..]
-                };
-                let is_asm = matches!(&asm_id_slice[0].raw, RawToken::Ident(v) if crate::TARGETS.contains(&v.as_ref()))
-                    && asm_id_slice.last().unwrap().raw == RawToken::OpenSquare
-                    && hist.len() >= 4;
 
                 let len = out.len();
 
                 Ok((
-                    Some(if is_asm {
-                        RawToken::InlineAssemblyContents(out.into())
-                    } else {
-                        RawToken::Ident(out.into())
-                    }),
+                    Some(RawToken::Ident(out.into())),
                     len,
                 ))
             }

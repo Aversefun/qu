@@ -1,0 +1,796 @@
+ModuleAnnotation(
+    QuVer(
+        Version {
+            strict: false,
+            major: 0,
+            minor: 0,
+            patch: 1,
+            prerelease: None,
+            build: None,
+        },
+    ),
+)
+ModuleAnnotation(
+    RuntimeChecks(
+        [
+            ArrayBounds,
+            Underflow,
+        ],
+    ),
+)
+ModuleAnnotation(
+    CheckViolated(
+        [
+            FunctionCall {
+                func: "libc_exit",
+                args: [
+                    Constant(
+                        U128(
+                            1,
+                        ),
+                    ),
+                ],
+            },
+        ],
+    ),
+)
+Func(
+    External {
+        calling_conv: C,
+        sig: ExternalFunctionSignature {
+            annotations: [
+                Extern(
+                    C,
+                    "exit",
+                ),
+            ],
+            name: "libc_exit",
+            params: [
+                Primitive(
+                    I32,
+                ),
+            ],
+            params_continue: false,
+            result: Some(
+                Never,
+            ),
+        },
+        external_name: "exit",
+    },
+)
+Func(
+    External {
+        calling_conv: C,
+        sig: ExternalFunctionSignature {
+            annotations: [
+                Extern(
+                    C,
+                    "printf",
+                ),
+            ],
+            name: "libc_printf",
+            params: [
+                Primitive(
+                    CString,
+                ),
+            ],
+            params_continue: true,
+            result: Some(
+                Normal(
+                    Primitive(
+                        I32,
+                    ),
+                ),
+            ),
+        },
+        external_name: "printf",
+    },
+)
+StructDef(
+    StructDef {
+        annotations: [
+            Repr {
+                cc: C,
+                packed: false,
+            },
+        ],
+        name: "Test",
+        fields: [
+            (
+                "field0",
+                Primitive(
+                    U8,
+                ),
+            ),
+            (
+                "field1",
+                Primitive(
+                    U16,
+                ),
+            ),
+            (
+                "field2",
+                Primitive(
+                    F32,
+                ),
+            ),
+            (
+                "length",
+                Primitive(
+                    Uptr,
+                ),
+            ),
+            (
+                "field3",
+                Pointer(
+                    List {
+                        ty: Struct(
+                            "Test",
+                        ),
+                        length: Variable(
+                            Real(
+                                VarRef {
+                                    name: "length",
+                                    version: Some(
+                                        0,
+                                    ),
+                                },
+                            ),
+                        ),
+                    },
+                ),
+            ),
+        ],
+    },
+)
+Func(
+    Internal {
+        sig: InternalFunctionSignature {
+            annotations: [],
+            name: "main",
+            params: [
+                (
+                    "argc",
+                    Primitive(
+                        Uptr,
+                    ),
+                ),
+                (
+                    "argv",
+                    Pointer(
+                        List {
+                            ty: Primitive(
+                                CString,
+                            ),
+                            length: Variable(
+                                Real(
+                                    VarRef {
+                                        name: "argc",
+                                        version: Some(
+                                            0,
+                                        ),
+                                    },
+                                ),
+                            ),
+                        },
+                    ),
+                ),
+            ],
+            result: Some(
+                Never,
+            ),
+        },
+        func_vars: [
+            (
+                "v0",
+                Primitive(
+                    I32,
+                ),
+            ),
+            (
+                "m0",
+                Memory(
+                    Primitive(
+                        I32,
+                    ),
+                ),
+            ),
+            (
+                "s0",
+                Struct(
+                    "Test",
+                ),
+            ),
+        ],
+        code: [
+            Block {
+                name: "entry",
+                instructions: [
+                    Assign(
+                        Real(
+                            VarRef {
+                                name: "v0",
+                                version: Some(
+                                    1,
+                                ),
+                            },
+                        ),
+                        Value(
+                            Constant(
+                                U128(
+                                    0,
+                                ),
+                            ),
+                        ),
+                    ),
+                    Assign(
+                        Real(
+                            VarRef {
+                                name: "m0",
+                                version: None,
+                            },
+                        ),
+                        Value(
+                            Constant(
+                                U128(
+                                    1,
+                                ),
+                            ),
+                        ),
+                    ),
+                    Assign(
+                        Struct(
+                            VarRef {
+                                name: "s0",
+                                version: Some(
+                                    0,
+                                ),
+                            },
+                            "field0",
+                        ),
+                        Value(
+                            Constant(
+                                U128(
+                                    0,
+                                ),
+                            ),
+                        ),
+                    ),
+                    Assign(
+                        Struct(
+                            VarRef {
+                                name: "s0",
+                                version: Some(
+                                    0,
+                                ),
+                            },
+                            "field1",
+                        ),
+                        Value(
+                            Constant(
+                                U128(
+                                    0,
+                                ),
+                            ),
+                        ),
+                    ),
+                    Assign(
+                        Struct(
+                            VarRef {
+                                name: "s0",
+                                version: Some(
+                                    0,
+                                ),
+                            },
+                            "field2",
+                        ),
+                        Value(
+                            Constant(
+                                F64(
+                                    0.0,
+                                ),
+                            ),
+                        ),
+                    ),
+                    Assign(
+                        Struct(
+                            VarRef {
+                                name: "s0",
+                                version: Some(
+                                    0,
+                                ),
+                            },
+                            "length",
+                        ),
+                        Value(
+                            Constant(
+                                U128(
+                                    0,
+                                ),
+                            ),
+                        ),
+                    ),
+                    Assign(
+                        Struct(
+                            VarRef {
+                                name: "s0",
+                                version: Some(
+                                    0,
+                                ),
+                            },
+                            "field3",
+                        ),
+                        Value(
+                            Constant(
+                                DropAddress,
+                            ),
+                        ),
+                    ),
+                    InlineAssembly {
+                        target: "x86_64",
+                        target_opts: Some(
+                            "intel",
+                        ),
+                        asm: "                                                                                                             ",
+                        opts: [
+                            VarToReg(
+                                VarRef {
+                                    name: "v0",
+                                    version: Some(
+                                        1,
+                                    ),
+                                },
+                                "eax",
+                            ),
+                            RegToVar(
+                                "eax",
+                                Real(
+                                    VarRef {
+                                        name: "v0",
+                                        version: Some(
+                                            2,
+                                        ),
+                                    },
+                                ),
+                            ),
+                            Option(
+                                NoFlags,
+                            ),
+                            Option(
+                                Pure,
+                            ),
+                            Option(
+                                NoMem,
+                            ),
+                            Option(
+                                NoStack,
+                            ),
+                        ],
+                    },
+                    InlineAssembly {
+                        target: "x86_64",
+                        target_opts: Some(
+                            "intel",
+                        ),
+                        asm: "                                                                                               ",
+                        opts: [],
+                    },
+                    Assign(
+                        Real(
+                            VarRef {
+                                name: "v0",
+                                version: Some(
+                                    3,
+                                ),
+                            },
+                        ),
+                        Phi(
+                            [
+                                Real(
+                                    VarRef {
+                                        name: "v0",
+                                        version: Some(
+                                            1,
+                                        ),
+                                    },
+                                ),
+                                Real(
+                                    VarRef {
+                                        name: "v0",
+                                        version: Some(
+                                            2,
+                                        ),
+                                    },
+                                ),
+                            ],
+                        ),
+                    ),
+                    VarDef(
+                        "v1",
+                        Primitive(
+                            U32,
+                        ),
+                    ),
+                    Assign(
+                        Real(
+                            VarRef {
+                                name: "v1",
+                                version: Some(
+                                    0,
+                                ),
+                            },
+                        ),
+                        Call(
+                            FunctionCall {
+                                func: "add",
+                                args: [
+                                    Variable(
+                                        Real(
+                                            VarRef {
+                                                name: "argc",
+                                                version: Some(
+                                                    0,
+                                                ),
+                                            },
+                                        ),
+                                    ),
+                                    Constant(
+                                        U128(
+                                            50,
+                                        ),
+                                    ),
+                                ],
+                            },
+                        ),
+                    ),
+                    Assign(
+                        Real(
+                            VarRef {
+                                name: "v1",
+                                version: Some(
+                                    1,
+                                ),
+                            },
+                        ),
+                        Rem(
+                            Variable(
+                                Real(
+                                    VarRef {
+                                        name: "v1",
+                                        version: Some(
+                                            0,
+                                        ),
+                                    },
+                                ),
+                            ),
+                            Constant(
+                                U128(
+                                    50,
+                                ),
+                            ),
+                        ),
+                    ),
+                    Assign(
+                        Real(
+                            VarRef {
+                                name: "v1",
+                                version: Some(
+                                    2,
+                                ),
+                            },
+                        ),
+                        Sub(
+                            Constant(
+                                U128(
+                                    10,
+                                ),
+                            ),
+                            Variable(
+                                Real(
+                                    VarRef {
+                                        name: "v1",
+                                        version: Some(
+                                            1,
+                                        ),
+                                    },
+                                ),
+                            ),
+                        ),
+                    ),
+                    Assign(
+                        Drop,
+                        Call(
+                            FunctionCall {
+                                func: "libc_printf",
+                                args: [
+                                    Constant(
+                                        CString(
+                                            "argc=%d",
+                                        ),
+                                    ),
+                                    Variable(
+                                        Real(
+                                            VarRef {
+                                                name: "v1",
+                                                version: Some(
+                                                    2,
+                                                ),
+                                            },
+                                        ),
+                                    ),
+                                ],
+                            },
+                        ),
+                    ),
+                    Call(
+                        FunctionCall {
+                            func: "no_return_function",
+                            args: [],
+                        },
+                    ),
+                    VarDef(
+                        "v2",
+                        Primitive(
+                            Uptr,
+                        ),
+                    ),
+                    Assign(
+                        Real(
+                            VarRef {
+                                name: "v2",
+                                version: Some(
+                                    0,
+                                ),
+                            },
+                        ),
+                        Value(
+                            Constant(
+                                U128(
+                                    11,
+                                ),
+                            ),
+                        ),
+                    ),
+                    Assign(
+                        Drop,
+                        Call(
+                            FunctionCall {
+                                func: "libc_printf",
+                                args: [
+                                    Constant(
+                                        CString(
+                                            "v2=%d",
+                                        ),
+                                    ),
+                                    Variable(
+                                        Real(
+                                            VarRef {
+                                                name: "v2",
+                                                version: Some(
+                                                    0,
+                                                ),
+                                            },
+                                        ),
+                                    ),
+                                ],
+                            },
+                        ),
+                    ),
+                    CmpBr {
+                        v0: Variable(
+                            Real(
+                                VarRef {
+                                    name: "v1",
+                                    version: Some(
+                                        2,
+                                    ),
+                                },
+                            ),
+                        ),
+                        cond: Equal,
+                        v1: Constant(
+                            U128(
+                                9,
+                            ),
+                        ),
+                        b_true: "true",
+                        b_false: "end",
+                    },
+                ],
+            },
+            Block {
+                name: "true",
+                instructions: [
+                    Assign(
+                        Drop,
+                        Call(
+                            FunctionCall {
+                                func: "libc_printf",
+                                args: [
+                                    Constant(
+                                        CString(
+                                            "one argument passed",
+                                        ),
+                                    ),
+                                ],
+                            },
+                        ),
+                    ),
+                    Jmp(
+                        "end",
+                    ),
+                ],
+            },
+            Block {
+                name: "end",
+                instructions: [
+                    Assign(
+                        Drop,
+                        Call(
+                            FunctionCall {
+                                func: "libc_printf",
+                                args: [
+                                    Constant(
+                                        CString(
+                                            "v0=%d on x86_64 v0 should be 8 and on others should be 0",
+                                        ),
+                                    ),
+                                    Variable(
+                                        Real(
+                                            VarRef {
+                                                name: "v0",
+                                                version: Some(
+                                                    3,
+                                                ),
+                                            },
+                                        ),
+                                    ),
+                                ],
+                            },
+                        ),
+                    ),
+                    Call(
+                        FunctionCall {
+                            func: "libc_exit",
+                            args: [
+                                Constant(
+                                    U128(
+                                        0,
+                                    ),
+                                ),
+                            ],
+                        },
+                    ),
+                ],
+            },
+        ],
+        entry_block: "entry",
+    },
+)
+Func(
+    Internal {
+        sig: InternalFunctionSignature {
+            annotations: [],
+            name: "no_return_function",
+            params: [],
+            result: None,
+        },
+        func_vars: [],
+        code: [
+            Block {
+                name: "entry",
+                instructions: [
+                    Assign(
+                        Drop,
+                        Call(
+                            FunctionCall {
+                                func: "libc_printf",
+                                args: [
+                                    Constant(
+                                        CString(
+                                            "this is from no_return_function",
+                                        ),
+                                    ),
+                                ],
+                            },
+                        ),
+                    ),
+                    Return(
+                        None,
+                    ),
+                ],
+            },
+        ],
+        entry_block: "entry",
+    },
+)
+Func(
+    Internal {
+        sig: InternalFunctionSignature {
+            annotations: [],
+            name: "add",
+            params: [
+                (
+                    "a",
+                    Primitive(
+                        U32,
+                    ),
+                ),
+                (
+                    "b",
+                    Primitive(
+                        U32,
+                    ),
+                ),
+            ],
+            result: Some(
+                Normal(
+                    Primitive(
+                        U32,
+                    ),
+                ),
+            ),
+        },
+        func_vars: [],
+        code: [
+            Block {
+                name: "entry",
+                instructions: [
+                    VarDef(
+                        "c",
+                        Primitive(
+                            U32,
+                        ),
+                    ),
+                    Assign(
+                        Real(
+                            VarRef {
+                                name: "c",
+                                version: Some(
+                                    0,
+                                ),
+                            },
+                        ),
+                        Add(
+                            Variable(
+                                Real(
+                                    VarRef {
+                                        name: "a",
+                                        version: Some(
+                                            0,
+                                        ),
+                                    },
+                                ),
+                            ),
+                            Variable(
+                                Real(
+                                    VarRef {
+                                        name: "b",
+                                        version: Some(
+                                            0,
+                                        ),
+                                    },
+                                ),
+                            ),
+                        ),
+                    ),
+                    Return(
+                        Some(
+                            Variable(
+                                Real(
+                                    VarRef {
+                                        name: "c",
+                                        version: Some(
+                                            0,
+                                        ),
+                                    },
+                                ),
+                            ),
+                        ),
+                    ),
+                ],
+            },
+        ],
+        entry_block: "entry",
+    },
+)

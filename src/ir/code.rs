@@ -100,7 +100,7 @@ pub enum NoProdInstruction<'a> {
         /// The block to jump to if true.
         b_true: Str<'a>,
         /// The block to jump to if false.
-        b_false: Str<'a>
+        b_false: Str<'a>,
     },
     /// An unconditional jump.
     Jmp(Str<'a>),

@@ -7,7 +7,10 @@ use super::{
     Version,
     code::{AssemblyOpt, AssemblyOption, Block, Cond, NoProdInstruction, ProdInstruction},
 };
-use crate::{errors::IRParserError, ir::ModuleItem};
+use crate::{
+    errors::IRParserError,
+    ir::{Location, ModuleItem},
+};
 use tokenizer::{RawToken, StrType, Token};
 
 pub mod tokenizer;
@@ -112,7 +115,7 @@ macro_rules! parse_separated {
         }
     };
     {
-        ($start_tok:pat, $sep:pat, $end_tok:pat): $input:expr => $t:ty {
+        ($start_tok:pat, $sep:pat, $end_tok:pat $(, at $start:expr)?): $input:expr => $t:ty {
             $value_matcher:pat $(if $guard:expr)? => $item_name:literal
         }
     } => {
@@ -120,7 +123,9 @@ macro_rules! parse_separated {
             let input = $input;
             let mut expecting_comma = false;
             let mut out = Vec::new();
+            #[allow(unused_assignments, reason = "intentional depending on the macro expansion")]
             let mut i = 1usize;
+            $(i = $start;)?
             if !matches!(input[0].raw, $start_tok) {
                 break 'bl Err(IRParserError::UnexpectedToken(
                     input[0].raw.clone(),
@@ -181,7 +186,7 @@ macro_rules! parse_separated {
         }
     };
     {
-        ($start_tok:pat, $sep:pat, $end_tok:pat): $input:expr => $item_name:literal {
+        ($start_tok:pat, $sep:pat, $end_tok:pat $(, at $start:expr)?): $input:expr => $item_name:literal {
             $($value_matcher:pat $(if $guard:expr)? => $bl:expr),+
             $(,)?
         }
@@ -189,7 +194,9 @@ macro_rules! parse_separated {
         'bl: {
             let input = $input;
             let mut expecting_comma = false;
+            #[allow(unused_assignments, reason = "intentional depending on the macro expansion")]
             let mut i = 1usize;
+            $(i = $start;)?
             if !matches!(input[0].raw, $start_tok) {
                 break 'bl Err(IRParserError::UnexpectedToken(
                     input[0].raw.clone(),
@@ -243,13 +250,10 @@ macro_rules! parse_separated {
 /// Add a newline and semicolon to the length if there is one.
 macro_rules! add_newline_to_len {
     ($len:expr, $input:expr) => {
-        add_newline_to_len!(newline_only, add_newline_to_len!(;, $len, $input), $input)
+        add_newline_to_len!(&RawToken::Newline, $len, $input)
     };
-    (newline_only, $len:expr, $input:expr) => {
-        $len + usize::from($input.get($len).map(|v| &v.raw) == Some(&RawToken::Newline))
-    };
-    (;, $len:expr, $input:expr) => {
-        ($len + usize::from($input.get($len).map(|v| &v.raw) == Some(&RawToken::Semicolon)))
+    ($pat:pat, $len:expr, $input:expr) => {
+        $len + usize::from(matches!($input.get($len).map(|v| &v.raw), Some($pat)))
     };
 }
 
@@ -789,26 +793,27 @@ impl<'a> Parse<'a> for Type<'a> {
             RawToken::Ident(name) => {
                 // primitive or struct
                 if let Ok((v, len)) = Primitive::parse((), input) {
-                    return Ok((
-                        Self::Primitive(v),
-                        add_newline_to_len!(newline_only, len, input),
-                    ));
+                    return Ok((Self::Primitive(v), add_newline_to_len!(len, input)));
                 }
+                Ok((Self::Struct(name.clone()), add_newline_to_len!(1, input)))
+            }
+            RawToken::Mem => {
+                let (ty, len) = Self::parse((), &input[1..])?;
                 Ok((
-                    Self::Struct(name.clone()),
-                    add_newline_to_len!(newline_only, 1, input),
+                    Self::Memory(Box::new(ty)),
+                    add_newline_to_len!(len + 1, input),
                 ))
             }
             RawToken::PointerOrMul => {
                 let (ty, len) = Self::parse((), &input[1..])?;
                 Ok((
                     Self::Pointer(Box::new(ty)),
-                    add_newline_to_len!(newline_only, len + 1, input),
+                    add_newline_to_len!(len + 1, input),
                 ))
             }
             RawToken::OpenSquare => {
                 let (ty, len) = Self::parse((), &input[1..])?;
-                expect_token!(input[len], RawToken::Semicolon);
+                expect_token!(input[len + 1], RawToken::Semicolon);
                 let (arr_len, len2) = Value::parse((), &input[(len + 2)..])?;
                 expect_token!(input[len + len2 + 2], RawToken::CloseSquare);
 
@@ -817,7 +822,7 @@ impl<'a> Parse<'a> for Type<'a> {
                         ty: Box::new(ty),
                         length: arr_len,
                     },
-                    add_newline_to_len!(newline_only, len + len2 + 3, input),
+                    add_newline_to_len!(len + len2 + 3, input),
                 ))
             }
             _ => {
@@ -894,7 +899,7 @@ impl<'a> Parse<'a> for InternalFunctionSignature<'a> {
                     params: params.into(),
                     result,
                 },
-                add_newline_to_len!(newline_only, i, input),
+                add_newline_to_len!(i, input),
             ))
         } else {
             bail!(UnexpectedToken(input[i], "expected function name"));
@@ -959,7 +964,7 @@ impl<'a> Parse<'a> for ExternalFunctionSignature<'a> {
                     result,
                     params_continue,
                 },
-                add_newline_to_len!(i, input),
+                add_newline_to_len!(&RawToken::Newline | &RawToken::Semicolon, i, input),
             ))
         } else {
             bail!(UnexpectedToken(input[i], "expected function name"));
@@ -1102,7 +1107,7 @@ impl<'a> Parse<'a> for ExtendedVarRef<'a> {
                     len + 2,
                 ))
             } else {
-                Ok((Self::Real(vref), len))
+                Ok((Self::Real(dbg!(vref)), len))
             }
         } else {
             bail!(UnexpectedToken(input[0], "expected _ or variable"));
@@ -1225,7 +1230,7 @@ impl<'a> Parse<'a> for ProdInstruction<'a> {
             RawToken::OpenParen => {
                 if input[1].raw == RawToken::Ident("phi".into()) {
                     let (variables, len) = parse_separated! {
-                        (_, RawToken::Comma, RawToken::CloseParen): &input[2..] => ExtendedVarRef {
+                        (_, RawToken::Comma, RawToken::CloseParen, at (0)): &input[2..] => ExtendedVarRef {
                             RawToken::Variable => "variable reference"
                         }
                     }?;
@@ -1295,8 +1300,8 @@ impl<'a> Parse<'a> for NoProdInstruction<'a> {
         }
         assert!(input.len() > 4); // unnecessary but clippy is unaware
         match &input[0].raw {
-            RawToken::Variable => {
-                if input[2].raw.is_property() {
+            RawToken::Variable | RawToken::Drop => {
+                if input[0].raw.is_drop() || input[2].raw.is_property() {
                     // assigning
                     let (var_ref, len) = ExtendedVarRef::parse((), input)?;
                     expect_token!(input[len], RawToken::Assign);
@@ -1437,7 +1442,7 @@ impl<'a> Parse<'a> for NoProdInstruction<'a> {
                             let (val, len) = Value::parse((), &input[2..])?;
                             (Some(val), len + 1)
                         };
-                        Ok((Self::Return(val.0), val.1 + 1))
+                        Ok((Self::Return(val.0), val.1 + 2))
                     }
                     _ => {
                         bail!(UnexpectedValue(
@@ -1497,10 +1502,12 @@ impl<'a> Parse<'a> for FunctionDef<'a> {
         }
 
         let (sig, len) = InternalFunctionSignature::parse((), &input[i..])?;
+        i += len;
+
         if !input[i].raw.is_block() {
             bail!(UnexpectedToken(input[i], "expected entry block"));
         }
-        i += len;
+        i += 1;
 
         let RawToken::Ident(entry) = input[i].raw.clone() else {
             bail!(UnexpectedToken(input[i], "expected entry block"));
@@ -1528,6 +1535,7 @@ impl<'a> Parse<'a> for FunctionDef<'a> {
                     if input.len() - i < 4 {
                         bail!(UnexpectedEOF(input[i].loc.clone() + input[i].len.clone(), "expected a block definition"));
                     } else if let Some(RawToken::Ident(name)) = input.get(i+1).map(|v| v.raw.clone()) {
+                        let i = i+2;
                         let (instructions, len) = parse_separated! {
                             (RawToken::OpenCurly, RawToken::Semicolon, RawToken::CloseCurly): &input[i..] => NoProdInstruction {
                                 _ => "instructions"
@@ -1559,14 +1567,36 @@ impl<'a> Parse<'a> for FunctionDef<'a> {
 
 impl<'a> Parse<'a> for ModuleItem<'a> {
     type Meta = ();
+    #[expect(clippy::missing_asserts_for_indexing, reason = "false positive")]
     fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
-        Ok(if let Ok(v) = ModuleAnnotation::parse((), input) {
-            (Self::ModuleAnnotation(v.0), v.1)
-        } else if let Ok(v) = StructDef::parse((), input) {
-            (Self::StructDef(v.0), v.1)
+        if input.is_empty() {
+            bail!(UnexpectedEOF(
+                Location::default(),
+                "can't make something out of nothing"
+            ));
+        }
+        if input[0].raw.is_struct_kw()
+            || (input[0].raw.is_item_annotation()
+                && input.len() >= 2
+                && input[1].raw.is_ident()
+                && ["repr"].contains(&input[1].raw.clone().unwrap_ident().to_lowercase().as_str()))
+        {
+            let (item, len) = StructDef::parse((), input)?;
+            Ok((Self::StructDef(item), len))
+        } else if input[0].raw.is_module_annotation() {
+            let (item, len) = ModuleAnnotation::parse((), input)?;
+            Ok((Self::ModuleAnnotation(item), len))
+        } else if input[0].raw.is_function()
+            || (input[0].raw.is_item_annotation()
+                && input.len() >= 2
+                && input[1].raw.is_ident()
+                && ["extern", "export", "hint"]
+                    .contains(&input[1].raw.clone().unwrap_ident().to_lowercase().as_str()))
+        {
+            let (item, len) = FunctionDef::parse((), input)?;
+            Ok((Self::Func(item), len))
         } else {
-            let v = FunctionDef::parse((), input)?;
-            (Self::Func(v.0), v.1)
-        })
+            bail!(UnexpectedToken(input[0], "expected a valid module item"));
+        }
     }
 }
