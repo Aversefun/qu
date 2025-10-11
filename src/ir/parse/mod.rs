@@ -1065,7 +1065,7 @@ impl<'a> Parse<'a> for StructDef<'a> {
                         if let RawToken::Ident(name) = &input[i+1].raw {
                             expect_token!(input[i+2], RawToken::Colon);
                             let (ty, ty_len) = Type::parse((), &input[(i+3)..])?;
-                            fields.push((name.clone(), Box::new(ty)));
+                            fields.push((name.clone(), ty));
                             Ok(ty_len+3)
                         } else {
                             bail!(UnexpectedValue(

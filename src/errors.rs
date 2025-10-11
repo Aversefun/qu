@@ -103,10 +103,16 @@ define_error! {
     pub enum CodegenError {
         /// Returned if there are zero codegen units specified.
         ZeroCodegenUnits = "zero codegen units specified",
-        /// A generic std error.
-        GenericError(loc: Str<'a>, err: Box<dyn std::error::Error>) = "codegen error at {loc}: {err}",
         /// Returned if this codegen cannot compile to assembly.
-        CannotCompileToAsm = "cannot compile to assembly"
+        CannotCompileToAsm = "cannot compile to assembly",
+        /// Returned if an error is encountered in thread communication.
+        ThreadCommError(note: String) = "thread communication error: {note}",
+        /// A generic error with just a note.
+        Generic(note: String) = "{note}",
+        /// An invalid option was passed.
+        InvalidOption(opt: String, note: String) = "invalid codegen option {opt}: {note}",
+        /// An unknown option was passed.
+        UnknownOption(opt: String) = "unknown codegen option {opt}"
     }
 }
 

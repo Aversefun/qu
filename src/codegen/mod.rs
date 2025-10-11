@@ -14,6 +14,14 @@ pub trait Codegen<'a>: Default + Debug {
     const BIN_EXTENSION: &'static str;
     /// Whether this codegen can output assembly.
     const CAN_OUTPUT_ASM: bool;
+    /// Whether this codegen can output binary.
+    const CAN_OUTPUT_BIN: bool;
+    /// The supported options. The first tuple value is the name and the
+    /// second is the description.
+    const CODEGEN_OPTS: &'static [(&'static str, &'static str)];
+    /// The maximum register bit width. Used to split up instructions with
+    /// higher bit widths.
+    const MAX_BIT_WIDTH: u8;
     /// Prepare internal state with annotations, structs, external functions,
     /// the number of codegen units, and other flags passed to the compiler.
     /// 
@@ -30,7 +38,7 @@ pub trait Codegen<'a>: Default + Debug {
         extern_funcs: &'a [ExternalFunctionSignature],
         codegen_units: usize,
         verbose: bool,
-        codegen_opts: &'a [&'a str],
+        codegen_opts: &'a [(&'a str, Option<&'a str>)],
     ) -> Result<(), CodegenError<'a>>;
     /// Compile a single block. If the `codegen_units` parameter passed to
     /// [`prepare`](Codegen::prepare) is more than one, delegate a thread
@@ -79,3 +87,4 @@ pub trait Codegen<'a>: Default + Debug {
 }
 
 pub mod x86_64_linux;
+

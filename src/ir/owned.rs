@@ -1,6 +1,6 @@
 //! Owned types - primarily used for codegen threads.
 
-use crate::{ir::code::Cond, List, OwnedVersion};
+use crate::{OwnedVersion, ir::code::Cond};
 
 use super::{CallingConvention, FunctionHint, Primitive, RuntimeCheck, StructAnnotation};
 
@@ -214,12 +214,6 @@ impl_from_borrowed!(RetType, super::RetType<'a>, enum {
     Never
 });
 
-impl From<List<'_, super::FunctionAnnotation<'_>>> for Vec<FunctionAnnotation> {
-    fn from(value: List<'_, super::FunctionAnnotation<'_>>) -> Self {
-        value.iter().map(|v| v.clone().into()).collect()
-    }
-}
-
 /// An internal function signature.
 #[derive(Clone, Debug, PartialEq)]
 pub struct InternalFunctionSignature {
@@ -233,12 +227,23 @@ pub struct InternalFunctionSignature {
     pub result: Option<RetType>,
 }
 
-impl_from_borrowed!(InternalFunctionSignature, super::InternalFunctionSignature<'a>, struct {
-    annotations,
-    name,
-    params,
-    result
-});
+impl From<super::InternalFunctionSignature<'_>> for InternalFunctionSignature {
+    fn from(value: super::InternalFunctionSignature<'_>) -> Self {
+        InternalFunctionSignature {
+            annotations: value.annotations.iter().map(|v| v.clone().into()).collect(),
+            name: value.name.into(),
+            params: value
+                .params
+                .iter()
+                .map(|v| {
+                    let v = v.clone();
+                    (v.0.into(), v.1.into())
+                })
+                .collect(),
+            result: value.result.map(|v| v.into()),
+        }
+    }
+}
 
 /// A function call.
 #[derive(Clone, Debug, PartialEq)]
@@ -247,6 +252,15 @@ pub struct FunctionCall {
     pub func: String,
     /// The arguments.
     pub args: Vec<Value>,
+}
+
+impl From<super::FunctionCall<'_>> for FunctionCall {
+    fn from(value: super::FunctionCall<'_>) -> Self {
+        FunctionCall {
+            func: value.func.into(),
+            args: value.args.iter().map(|v| v.clone().into()).collect(),
+        }
+    }
 }
 
 /// A struct definition.
@@ -260,6 +274,23 @@ pub struct StructDef {
     pub fields: Vec<(String, Type)>,
 }
 
+impl From<super::StructDef<'_>> for StructDef {
+    fn from(value: super::StructDef<'_>) -> Self {
+        StructDef {
+            annotations: value.annotations.iter().map(|v| v.clone().into()).collect(),
+            name: value.name.into(),
+            fields: value
+                .fields
+                .iter()
+                .map(|v| {
+                    let v = v.clone();
+                    (v.0.into(), v.1.into())
+                })
+                .collect(),
+        }
+    }
+}
+
 /// A module-level annotation.
 #[derive(Clone, Debug, PartialEq)]
 pub enum ModuleAnnotation {
@@ -269,6 +300,20 @@ pub enum ModuleAnnotation {
     RuntimeChecks(Vec<RuntimeCheck>),
     /// The function(s) to call when a runtime check is violated.
     CheckViolated(Vec<FunctionCall>),
+}
+
+impl From<super::ModuleAnnotation<'_>> for ModuleAnnotation {
+    fn from(value: super::ModuleAnnotation<'_>) -> Self {
+        match value {
+            super::ModuleAnnotation::QuVer(v) => Self::QuVer(v.into()),
+            super::ModuleAnnotation::RuntimeChecks(v) => {
+                Self::RuntimeChecks(v.iter().map(|v| v.clone().into()).collect())
+            }
+            super::ModuleAnnotation::CheckViolated(v) => {
+                Self::CheckViolated(v.iter().map(|v| v.clone().into()).collect())
+            }
+        }
+    }
 }
 
 /// An external function signature.
@@ -284,6 +329,25 @@ pub struct ExternalFunctionSignature {
     pub params_continue: bool,
     /// The result of the function.
     pub result: Option<RetType>,
+}
+
+impl From<super::ExternalFunctionSignature<'_>> for ExternalFunctionSignature {
+    fn from(value: super::ExternalFunctionSignature<'_>) -> Self {
+        ExternalFunctionSignature {
+            annotations: value.annotations.iter().map(|v| v.clone().into()).collect(),
+            name: value.name.into(),
+            params: value
+                .params
+                .iter()
+                .map(|v| {
+                    let v = v.clone();
+                    v.into()
+                })
+                .collect(),
+            params_continue: value.params_continue,
+            result: value.result.map(|v| v.into()),
+        }
+    }
 }
 
 /// Instructions that do produce a value.
@@ -324,6 +388,33 @@ pub enum ProdInstruction {
     Value(Value),
 }
 
+impl From<super::code::ProdInstruction<'_>> for ProdInstruction {
+    fn from(value: super::code::ProdInstruction<'_>) -> Self {
+        use super::code::ProdInstruction::*;
+        match value {
+            Add(v1, v2) => Self::Add(v1.into(), v2.into()),
+            Sub(v1, v2) => Self::Sub(v1.into(), v2.into()),
+            Mul(v1, v2) => Self::Mul(v1.into(), v2.into()),
+            Div(v1, v2) => Self::Div(v1.into(), v2.into()),
+            Rem(v1, v2) => Self::Rem(v1.into(), v2.into()),
+
+            And(v1, v2) => Self::And(v1.into(), v2.into()),
+            Or(v1, v2) => Self::Or(v1.into(), v2.into()),
+            Not(v) => Self::Not(v.into()),
+            Xor(v1, v2) => Self::Xor(v1.into(), v2.into()),
+
+            DerefPtr(v) => Self::DerefPtr(v.into()),
+            CreatePtr(v) => Self::CreatePtr(v.into()),
+
+            Phi(v) => Self::Phi(v.iter().map(|v| v.clone().into()).collect()),
+
+            Call(v) => Self::Call(v.into()),
+
+            Value(v) => Self::Value(v.into()),
+        }
+    }
+}
+
 /// Options provided to a inline assembly block.
 #[derive(Clone, Debug, PartialEq)]
 pub enum AssemblyOption {
@@ -344,6 +435,16 @@ pub enum AssemblyOption {
     NoStack,
 }
 
+impl_from_borrowed!(AssemblyOption, super::code::AssemblyOption<'a>, enum {
+    CodegenSpecific(v),
+    NoReturn,
+    NoFlags,
+    Pure,
+    NoMem,
+    ReadOnly,
+    NoStack,
+});
+
 /// A value for an inline assembly block.
 #[derive(Clone, Debug, PartialEq)]
 pub enum AssemblyOpt {
@@ -354,6 +455,12 @@ pub enum AssemblyOpt {
     /// Provide an option.
     Option(AssemblyOption),
 }
+
+impl_from_borrowed!(AssemblyOpt, super::code::AssemblyOpt<'a>, enum {
+    VarToReg(v1, v2),
+    RegToVar(v1, v2),
+    Option(v),
+});
 
 /// Instructions that don't produce a value.
 #[derive(Clone, Debug, PartialEq)]
@@ -394,6 +501,43 @@ pub enum NoProdInstruction {
     Return(Option<Value>),
 }
 
+impl From<super::code::NoProdInstruction<'_>> for NoProdInstruction {
+    fn from(value: super::code::NoProdInstruction<'_>) -> Self {
+        use super::code::NoProdInstruction::*;
+        match value {
+            Call(v) => Self::Call(v.into()),
+            CmpBr {
+                v0,
+                cond,
+                v1,
+                b_true,
+                b_false,
+            } => Self::CmpBr {
+                v0: v0.into(),
+                cond: cond.into(),
+                v1: v1.into(),
+                b_true: b_true.into(),
+                b_false: b_false.into(),
+            },
+            Jmp(v) => Self::Jmp(v.into()),
+            InlineAssembly {
+                target,
+                target_opts,
+                asm,
+                opts,
+            } => Self::InlineAssembly {
+                target: target.into(),
+                target_opts: target_opts.map(Into::into),
+                asm: asm.into(),
+                opts: opts.iter().map(|v| v.clone().into()).collect(),
+            },
+            VarDef(v1, v2) => Self::VarDef(v1.into(), v2.into()),
+            Assign(v1, v2) => Self::Assign(v1.into(), v2.into()),
+            Return(v) => Self::Return(v.map(Into::into)),
+        }
+    }
+}
+
 /// A single block.
 #[derive(Clone, Debug, PartialEq)]
 pub struct Block {
@@ -401,4 +545,17 @@ pub struct Block {
     pub name: String,
     /// The instructions.
     pub instructions: Vec<NoProdInstruction>,
+}
+
+impl From<super::code::Block<'_>> for Block {
+    fn from(value: super::code::Block<'_>) -> Self {
+        Block {
+            name: value.name.into(),
+            instructions: value
+                .instructions
+                .iter()
+                .map(|v| v.clone().into())
+                .collect(),
+        }
+    }
 }

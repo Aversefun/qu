@@ -25,6 +25,7 @@
 #![feature(phantom_variance_markers)]
 #![feature(mpmc_channel)]
 #![feature(more_qualified_paths)]
+#![feature(exit_status_error)]
 
 use std::{
     borrow::Cow,
@@ -227,3 +228,76 @@ impl Version<'_> {
         }
     }
 }
+
+/// Implement an is function.
+macro_rules! impl_is {
+    ($(#[$attrs:meta])* $p:pat, $name:ident) => {
+        paste::paste! {
+            #[doc = concat!("Returns whether this is a ", stringify!($ty), ".")]
+            $(#[$attrs])*
+            #[allow(unused_variables)]
+            pub fn [< is_ $name >](&self) -> bool {
+                matches!(self, $p)
+            }
+        }
+    };
+}
+
+use impl_is;
+
+/// Implement an unwrap function.
+macro_rules! impl_unwrap {
+    ($(#[$attrs:meta])* $parent:ty, $t:ty, $ty:ty, $p:pat => $e:expr, $name:ident) => {
+        paste::paste! {
+            #[doc = concat!("Returns the ", stringify!($t), " value if it has one.")]
+            $(#[$attrs])*
+            #[doc = ""]
+            #[doc = "# Panics"]
+            #[doc = concat!("If this value is not a [`", stringify!($ty), "`], then this will panic")]
+            #[allow(clippy::double_must_use, unused_variables)]
+            #[must_use]
+            pub fn [< unwrap_ $name >](self) -> $t {
+                match self {
+                    $p => {$e},
+                    _ => panic!(concat!(
+                        "`", stringify!($parent), "::unwrap_", stringify!($t), "` attempted on non-`", stringify!($t),"` value"
+                    )),
+                }
+            }
+
+            #[doc = concat!("Returns the ", stringify!($t), " value if it has one.")]
+            $(#[$attrs])*
+            #[doc = ""]
+            #[doc = "# Errors"]
+            #[doc = concat!("If this value is not a [`", stringify!($ty), "`], then this will return a
+                             [`IRWrongValueError`](crate::errors::IRWrongValueError).")]
+            #[allow(unused_variables)]
+            pub fn [< ok_ $name >](self) -> Result<$t, $crate::errors::IRWrongValueError<'a>> {
+                match self {
+                    $p => Ok({$e}),
+                    _ => Err($crate::errors::IRWrongValueError::IsntExpectedValue(
+                        stringify!($parent), stringify!($t)
+                    )),
+                }
+            }
+
+            #[doc = concat!("Returns the ", stringify!($t), " value if it has one.")]
+            $(#[$attrs])*
+            #[doc = ""]
+            #[doc = concat!("If this value is not a [`", stringify!($ty), "`], then this will return None.")]
+            #[allow(unused_variables)]
+            pub fn [< some_ $name >](self) -> Option<$t> {
+                match self {
+                    $p => Some({$e}),
+                    _ => None,
+                }
+            }
+        }
+    };
+    ($(#[$attrs:meta])* $parent:ty, $t:ty, $ty:path, $name:ident) => {
+        impl_unwrap!($(#[$attrs])* $parent, $t, $ty, $ty (v) => v, $name);
+        $crate::ir::impl_is!($(#[$attrs])* $ty (v), $name);
+    };
+}
+
+use impl_unwrap;
