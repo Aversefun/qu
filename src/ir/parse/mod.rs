@@ -9,7 +9,7 @@ use super::{
 };
 use crate::{
     errors::IRParserError,
-    ir::{Location, ModuleItem},
+    ir::{LengthValue, Location, ModuleItem, RegRef},
 };
 use tokenizer::{RawToken, StrType, Token};
 
@@ -535,7 +535,7 @@ impl<'a> Parse<'a> for Value<'a> {
         }
         assert!(input.len() > 2); // unnecessary but clippy is unaware
         if input[0].raw == RawToken::Variable && input[2].raw == RawToken::Property {
-            ExtendedVarRef::parse((), input).map(|v| (Self::Variable(v.0), v.1))
+            RegRef::parse((), input).map(|v| (Self::Variable(v.0), v.1))
         } else if let Ok(val) = ConstValue::parse(None, input) {
             Ok((Value::Constant(val.0), add_newline_to_len!(val.1, input)))
         } else if let RawToken::Ident(name) = &input[0].raw
@@ -547,6 +547,42 @@ impl<'a> Parse<'a> for Value<'a> {
                 input[0].raw.clone(),
                 input[0].loc.clone(),
                 "expected one of undef, $variable_name.version, or constant",
+            ))
+        }
+    }
+}
+
+impl<'a> Parse<'a> for LengthValue<'a> {
+    type Meta = ();
+    fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
+        if input.len() <= 2 {
+            return Err(IRParserError::UnexpectedEOF(
+                input
+                    .last()
+                    .map(|v| v.loc.clone() + v.len.clone())
+                    .unwrap_or_default(),
+                "expected tokens for a value".into(),
+            ));
+        }
+        assert!(input.len() > 2); // unnecessary but clippy is unaware
+        if input[0].raw == RawToken::Variable && input[2].raw == RawToken::Property {
+            RegRef::parse((), input).map(|v| (Self::Variable(v.0), v.1))
+        } else if let Ok(val) = ConstValue::parse(None, input)
+            && (val.0.is_uptr() || val.0.is_u128())
+        {
+            Ok((
+                LengthValue::Constant(match val.0 {
+                    ConstValue::Uptr(v) => v,
+                    ConstValue::U128(v) => v as u64,
+                    _ => unreachable!(),
+                }),
+                add_newline_to_len!(val.1, input),
+            ))
+        } else {
+            Err(IRParserError::UnexpectedToken(
+                input[0].raw.clone(),
+                input[0].loc.clone(),
+                "expected $variable_name.version or constant uptr",
             ))
         }
     }
@@ -814,7 +850,7 @@ impl<'a> Parse<'a> for Type<'a> {
             RawToken::OpenSquare => {
                 let (ty, len) = Self::parse((), &input[1..])?;
                 expect_token!(input[len + 1], RawToken::Semicolon);
-                let (arr_len, len2) = Value::parse((), &input[(len + 2)..])?;
+                let (arr_len, len2) = LengthValue::parse((), &input[(len + 2)..])?;
                 expect_token!(input[len + len2 + 2], RawToken::CloseSquare);
 
                 Ok((
@@ -1115,6 +1151,26 @@ impl<'a> Parse<'a> for ExtendedVarRef<'a> {
     }
 }
 
+impl<'a> Parse<'a> for RegRef<'a> {
+    type Meta = ();
+    fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
+        if input[0].raw.is_variable() {
+            let (vref, len) = VarRef::parse((), input)?;
+            if input[len].raw.is_property() {
+                expect_token!(input[len + 1], RawToken::Ident(_));
+                Ok((
+                    Self::Struct(vref, input[len + 1].raw.clone().unwrap_ident()),
+                    len + 2,
+                ))
+            } else {
+                Ok((Self::Real(dbg!(vref)), len))
+            }
+        } else {
+            bail!(UnexpectedToken(input[0], "expected variable"));
+        }
+    }
+}
+
 impl<'a> Parse<'a> for AssemblyOpt<'a> {
     type Meta = ();
     fn parse((): Self::Meta, input: &'a [Token]) -> Result<(Self, usize), IRParserError<'a>> {
@@ -1230,7 +1286,7 @@ impl<'a> Parse<'a> for ProdInstruction<'a> {
             RawToken::OpenParen => {
                 if input[1].raw == RawToken::Ident("phi".into()) {
                     let (variables, len) = parse_separated! {
-                        (_, RawToken::Comma, RawToken::CloseParen, at (0)): &input[2..] => ExtendedVarRef {
+                        (_, RawToken::Comma, RawToken::CloseParen, at (0)): &input[2..] => RegRef {
                             RawToken::Variable => "variable reference"
                         }
                     }?;

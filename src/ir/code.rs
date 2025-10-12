@@ -1,8 +1,7 @@
 //! The code itself.
 
 use super::{ExtendedVarRef, FunctionCall, Type, Value, VarRef, impl_ir_item};
-use crate::{List, Str};
-
+use crate::{List, Str, ir::RegRef};
 
 /// A condition for a [`CmpBr`](NoProdInstruction::CmpBr).
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -47,7 +46,7 @@ pub enum ProdInstruction<'a> {
     CreatePtr(Str<'a>),
 
     /// Returns the first variable that is not undefined.
-    Phi(List<'a, ExtendedVarRef<'a>>),
+    Phi(List<'a, RegRef<'a>>),
 
     /// A producing function call.
     Call(FunctionCall<'a>),

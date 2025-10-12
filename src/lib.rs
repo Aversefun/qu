@@ -26,11 +26,10 @@
 #![feature(mpmc_channel)]
 #![feature(more_qualified_paths)]
 #![feature(exit_status_error)]
+#![feature(string_from_utf8_lossy_owned)]
+#![feature(new_range_api)]
 
-use std::{
-    borrow::Cow,
-    str::FromStr,
-};
+use std::{borrow::Cow, str::FromStr};
 
 pub mod codegen;
 pub mod errors;

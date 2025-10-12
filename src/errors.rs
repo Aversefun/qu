@@ -3,6 +3,7 @@
 use std::{
     error::Error,
     fmt::Display,
+    io::Error as IOError,
     marker::PhantomCovariantLifetime,
     num::{ParseFloatError, ParseIntError},
 };
@@ -33,6 +34,7 @@ macro_rules! define_error {
                 ),+
                 ,
                 /// Makes the compiler not be angry when a lifetime is unused.
+                #[doc(hidden)]
                 _PhantomLifetime(PhantomCovariantLifetime<'a>)
             }
 
@@ -112,12 +114,24 @@ define_error! {
         /// An invalid option was passed.
         InvalidOption(opt: String, note: String) = "invalid codegen option {opt}: {note}",
         /// An unknown option was passed.
-        UnknownOption(opt: String) = "unknown codegen option {opt}"
+        UnknownOption(opt: String) = "unknown codegen option {opt}",
+        /// An I/O error was encountered.
+        IOError(err: IOError) = "io error: {err}",
+        /// An error assembling was encountered.
+        AssemblingError(note: String) = "error assembling: {note}",
+        /// An error linking was encountered.
+        LinkingError(note: String) = "error linking: {note}",
     }
 }
 
 impl<E: Error> From<E> for IRTokenizerError<'_, E> {
     fn from(value: E) -> Self {
         IRTokenizerError::IOError(value)
+    }
+}
+
+impl From<IOError> for CodegenError<'_> {
+    fn from(value: IOError) -> Self {
+        Self::IOError(value)
     }
 }

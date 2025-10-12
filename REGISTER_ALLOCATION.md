@@ -1,6 +1,4 @@
 # Register allocation
 
-The register allocator takes in these arguments from the codegen:
-
-- Registers and their width
-
+The allocator takes the live ranges of every variable (IR register). The
+allocator uses second-chance bin packing.

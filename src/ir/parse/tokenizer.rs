@@ -309,7 +309,10 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
                     out.push(chs[i]);
                     i += 1;
                 }
-                return Ok((Some(RawToken::InlineAssemblyContents(out.into())), i.saturating_sub(1)));
+                return Ok((
+                    Some(RawToken::InlineAssemblyContents(out.into())),
+                    i.saturating_sub(1),
+                ));
             }
         }
         match chs[0] {
@@ -365,9 +368,7 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
             '-' => Ok((Some(RawToken::Sub), 1)),
             '0'..='9' => parse_number::<T>(chs, loc.clone()),
 
-            'c' if chs.len() >= 3 && chs[1] == '"' => {
-                Ok(parse_str_literal(&chs[2..], StrType::C))
-            }
+            'c' if chs.len() >= 3 && chs[1] == '"' => Ok(parse_str_literal(&chs[2..], StrType::C)),
             '"' if chs.len() >= 2 => Ok(parse_str_literal(&chs[1..], StrType::Normal)),
 
             '_' if chs.len() >= 2 && !chs[1].is_alphanumeric() && chs[1] != '_' => {
@@ -387,10 +388,7 @@ pub fn read_tokens<'a, T: 'a + ReadChar>(
 
                 let len = out.len();
 
-                Ok((
-                    Some(RawToken::Ident(out.into())),
-                    len,
-                ))
+                Ok((Some(RawToken::Ident(out.into())), len))
             }
             '.' => Ok((Some(RawToken::Property), 1)),
             ch if ch.is_whitespace() => Ok((Some(RawToken::Whitespace), 1)),

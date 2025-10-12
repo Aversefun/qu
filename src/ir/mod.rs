@@ -2,14 +2,14 @@
 
 use std::ops::Add;
 
-use crate::{List, Str, Version, ir::code::Block, version, impl_is, impl_unwrap};
+use crate::{List, Str, Version, impl_is, impl_unwrap, ir::code::Block, version};
 
 /// List of supported QUIR versions.
 pub const SUPPORTED_QUIR_VERSIONS: &[Version<'_>] = &[version!(0, 1, 0)];
 
 pub mod code;
-pub mod parse;
 pub mod owned;
+pub mod parse;
 
 /// A location in a file.
 #[derive(Clone, PartialEq, Eq, Default, Hash)]
@@ -204,6 +204,20 @@ impl Primitive {
 
     impl_is!(Primitive::CString, cstr);
     impl_is!(Primitive::String, str);
+
+    pub fn get_size(self) -> Option<u64> {
+        use Primitive::*;
+        match self {
+            U8 | I8 => Some(1),
+            U16 | I16 => Some(2),
+            U32 | I32 | F32 => Some(4),
+            U64 | I64 | F64 | Uptr | Iptr => Some(8),
+            U128 | I128 => Some(16),
+
+            CString => None,
+            String => None,
+        }
+    }
 }
 
 /// A generic type.
@@ -218,7 +232,7 @@ pub enum Type<'a> {
         /// The type of the items.
         ty: Box<Type<'a>>,
         /// The length of the list.
-        length: Value<'a>,
+        length: LengthValue<'a>,
     },
     /// A pointer.
     Pointer(Box<Type<'a>>),
@@ -247,7 +261,7 @@ impl<'a> Type<'a> {
         /// Why is this named `ty_list` and not just `list`? Because this and `ty_struct` are
         /// made using a macro and the compiler gets angry when we use a keyword where it expects an
         /// ident. For consistency, we made them all start with `ty_`.
-        Type, (Box<Type<'a>>, Value<'a>), Type::List, Type::List {ty, length} => (ty.clone(), length.clone()), ty_list
+        Type, (Box<Type<'a>>, LengthValue<'a>), Type::List, Type::List {ty, length} => (ty, length), ty_list
     );
 }
 
@@ -299,13 +313,31 @@ impl<'a> ExtendedVarRef<'a> {
     impl_is!(ExtendedVarRef::Drop, drop);
 }
 
+/// [`ExtendedVarRef`] without [`Drop`](ExtendedVarRef::Drop).
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum RegRef<'a> {
+    /// A real variable.
+    Real(VarRef<'a>),
+    /// A field of a struct.
+    Struct(VarRef<'a>, Str<'a>),
+}
+
+impl_ir_item!(RegRef<'_>);
+
+impl<'a> RegRef<'a> {
+    impl_unwrap!(RegRef, VarRef<'a>, RegRef::Real, real);
+    impl_unwrap!(RegRef, VarRef<'a>, RegRef::Struct, RegRef::Struct(v, _) => v.clone(), struct_ref);
+    impl_unwrap!(RegRef, Str<'a>, RegRef::Struct, RegRef::Struct(_, v) => v.clone(), struct_field);
+    impl_is!(RegRef::Struct(_, _), ty_struct);
+}
+
 /// A value.
 #[derive(Clone, Debug, PartialEq)]
 pub enum Value<'a> {
     /// A constant value.
     Constant(ConstValue<'a>),
     /// A local variable.
-    Variable(ExtendedVarRef<'a>),
+    Variable(RegRef<'a>),
     /// The default value for untaken branches. Used in phi.
     Undef,
 }
@@ -314,8 +346,24 @@ impl_ir_item!(Value<'_>);
 
 impl<'a> Value<'a> {
     impl_unwrap!(Value, ConstValue<'a>, Value::Constant, constant);
-    impl_unwrap!(Value, ExtendedVarRef<'a>, Value::Variable, local);
+    impl_unwrap!(Value, RegRef<'a>, Value::Variable, local);
     impl_is!(Value::Undef, undef);
+}
+
+/// A value.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum LengthValue<'a> {
+    /// A constant value.
+    Constant(u64),
+    /// A local variable.
+    Variable(RegRef<'a>),
+}
+
+impl_ir_item!(LengthValue<'_>);
+
+impl<'a> LengthValue<'a> {
+    impl_unwrap!(Value, u64, LengthValue::Constant, constant);
+    impl_unwrap!(Value, RegRef<'a>, LengthValue::Variable, local);
 }
 
 /// A function call.

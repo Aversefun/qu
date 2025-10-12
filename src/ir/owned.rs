@@ -1,6 +1,6 @@
 //! Owned types - primarily used for codegen threads.
 
-use crate::{OwnedVersion, ir::code::Cond};
+use crate::{OwnedVersion, impl_is, impl_unwrap, ir::code::Cond};
 
 use super::{CallingConvention, FunctionHint, Primitive, RuntimeCheck, StructAnnotation};
 
@@ -56,6 +56,32 @@ pub enum FunctionAnnotation {
     Hint(Vec<FunctionHint>),
 }
 
+impl<'a> FunctionAnnotation {
+    impl_unwrap!(
+        FunctionAnnotation,
+        (CallingConvention, String),
+        FunctionAnnotation::Export,
+        FunctionAnnotation::Export(cc, s) => (cc, s),
+        export
+    );
+    impl_is!(FunctionAnnotation::Export(_, _), export);
+    impl_unwrap!(
+        FunctionAnnotation,
+        (CallingConvention, String),
+        FunctionAnnotation::Extern,
+        FunctionAnnotation::Extern(cc, s) => (cc, s),
+        extern
+    );
+
+    impl_is!(FunctionAnnotation::Extern(_, _), extern);
+    impl_unwrap!(
+        FunctionAnnotation,
+        Vec<FunctionHint>,
+        FunctionAnnotation::Hint,
+        hint
+    );
+}
+
 impl_from_borrowed!(FunctionAnnotation, super::FunctionAnnotation<'a>, enum {
     Export(cc, s),
     Extern(cc, s),
@@ -91,6 +117,30 @@ impl_from_borrowed!(ExtendedVarRef, super::ExtendedVarRef<'a>, enum {
     Real(vref),
     Struct(vref, field),
     Drop,
+});
+
+impl From<ExtendedVarRef> for Option<RegRef> {
+    fn from(value: ExtendedVarRef) -> Self {
+        match value {
+            ExtendedVarRef::Drop => None,
+            ExtendedVarRef::Real(vref) => Some(RegRef::Real(vref)),
+            ExtendedVarRef::Struct(vref, s) => Some(RegRef::Struct(vref, s)),
+        }
+    }
+}
+
+/// [`ExtendedVarRef`] without [`Drop`](ExtendedVarRef::Drop).
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum RegRef {
+    /// A real variable.
+    Real(VarRef),
+    /// A field of a struct.
+    Struct(VarRef, String),
+}
+
+impl_from_borrowed!(RegRef, super::RegRef<'a>, enum {
+    Real(vref),
+    Struct(vref, field),
 });
 
 /// A constant value.
@@ -149,7 +199,7 @@ pub enum Value {
     /// A constant value.
     Constant(ConstValue),
     /// A local variable.
-    Variable(ExtendedVarRef),
+    Variable(RegRef),
     /// The default value for untaken branches. Used in phi.
     Undef,
 }
@@ -163,8 +213,24 @@ impl_from_borrowed!(Value, super::Value<'a>, enum {
     Undef,
 });
 
+/// A value used for length.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum LengthValue {
+    /// A constant value.
+    Constant(u64),
+    /// A local variable.
+    Variable(RegRef),
+}
+
+impl_from_borrowed!(LengthValue, super::LengthValue<'a>, enum {
+    // A constant value.
+    Constant(v),
+    // A local variable.
+    Variable(v),
+});
+
 /// A generic type.
-#[derive(Clone, Debug, PartialEq)]
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
 pub enum Type {
     /// A primitive type.
     Primitive(Primitive),
@@ -175,12 +241,26 @@ pub enum Type {
         /// The type of the items.
         ty: Box<Type>,
         /// The length of the list.
-        length: Value,
+        length: LengthValue,
     },
     /// A pointer.
     Pointer(Box<Type>),
     /// A value in memory (.data or .bss sections).
     Memory(Box<Type>),
+}
+
+impl Type {
+    pub fn get_size(&self) -> Option<u64> {
+        match self {
+            Self::Primitive(prim) => prim.get_size(),
+            Self::List { ty, length } => ty.get_size().and_then(|v| match length {
+                LengthValue::Constant(l) => Some(*l * v),
+                LengthValue::Variable(_) => None,
+            }),
+            Self::Memory(_) | Self::Pointer(_) => Primitive::Uptr.get_size(),
+            Self::Struct(_) => None,
+        }
+    }
 }
 
 impl From<Box<super::Type<'_>>> for Box<Type> {
@@ -379,7 +459,7 @@ pub enum ProdInstruction {
     CreatePtr(String),
 
     /// Returns the first variable that is not undefined.
-    Phi(Vec<ExtendedVarRef>),
+    Phi(Vec<RegRef>),
 
     /// A producing function call.
     Call(FunctionCall),

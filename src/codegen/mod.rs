@@ -2,11 +2,11 @@
 
 use crate::errors::CodegenError;
 use crate::ir::owned::{
-    ExternalFunctionSignature, InternalFunctionSignature, ModuleAnnotation, StructDef,
-    Block
+    Block, ExternalFunctionSignature, InternalFunctionSignature, ModuleAnnotation, StructDef, Type,
 };
 
 use std::fmt::Debug;
+use std::path::PathBuf;
 
 /// A codegen.
 pub trait Codegen<'a>: Default + Debug {
@@ -24,7 +24,7 @@ pub trait Codegen<'a>: Default + Debug {
     const MAX_BIT_WIDTH: u8;
     /// Prepare internal state with annotations, structs, external functions,
     /// the number of codegen units, and other flags passed to the compiler.
-    /// 
+    ///
     /// If `codegen_units` is more than one, create that number of threads to
     /// compile right away.
     ///
@@ -36,15 +36,22 @@ pub trait Codegen<'a>: Default + Debug {
         annotations: &'a [ModuleAnnotation],
         structs: &'a [StructDef],
         extern_funcs: &'a [ExternalFunctionSignature],
+        intern_funcs: &'a [InternalFunctionSignature],
         codegen_units: usize,
         verbose: bool,
         codegen_opts: &'a [(&'a str, Option<&'a str>)],
+        input_name: &'a str,
     ) -> Result<(), CodegenError<'a>>;
     /// Compile a single block. If the `codegen_units` parameter passed to
     /// [`prepare`](Codegen::prepare) is more than one, delegate a thread
     /// to compile this block.
     ///
     /// This function should only block if one codegen unit is being used.
+    ///
+    /// > [!CAUTION]
+    /// > NOTE: IT IS REQUIRED THAT PER-FUNCTION ENTRY BLOCKS ARE COMPILED
+    /// > **BEFORE** ALL BLOCKS IN THAT FUNCTION. OTHERWISE, WEIRD BUGS MAY
+    /// > OCCUR. **THIS IS THE CALLER'S RESPONSIBILITY TO ENSURE.**
     ///
     /// # Errors
     /// This function should NEVER leave the type this is implemented on in an
@@ -54,6 +61,7 @@ pub trait Codegen<'a>: Default + Debug {
     fn compile(
         &mut self,
         sig: InternalFunctionSignature,
+        func_locals: &'a [(String, Type)],
         block: Block,
         is_entry: bool,
     ) -> Result<(), CodegenError<'a>>;
@@ -78,13 +86,15 @@ pub trait Codegen<'a>: Default + Debug {
         Err(CodegenError::CannotCompileToAsm)
     }
     /// Produces a binary output after codegen. If needed, this may call
-    /// external programs to assemble/link the output.
+    /// external programs to assemble/link the output. These programs should
+    /// output to `temp_dir`.
     ///
     /// # Errors
     /// This function should NEVER leave the type this is implemented on in an
     /// invalid state or panic. This function should propogate all errors.
-    fn output_bin(&mut self) -> Result<Vec<u8>, CodegenError<'a>>;
+    fn output_bin(&mut self, temp_dir: PathBuf) -> Result<Vec<u8>, CodegenError<'a>>;
 }
 
 pub mod x86_64_linux;
 
+pub mod register_alloc;
