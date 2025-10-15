@@ -10,7 +10,7 @@ use std::{
 
 use crate::{
     Str,
-    ir::{Location, parse::tokenizer::RawToken},
+    ir::{Location, code::Cond, owned::Value, parse::tokenizer::RawToken},
 };
 
 /// Define an error type.
@@ -19,7 +19,7 @@ macro_rules! define_error {
         $($vis:vis enum $name:ident $(< $($gen:tt : $trait:ident),* $(,)? >)? {
             $(
                 $(#[$meta:meta])*
-                $variant_name:ident $(($($fmt_arg:ident: $fmt_type:ty),*))? = $variant_value:literal
+                $variant_name:ident $(($($fmt_arg:ident: $fmt_type:ty),* $(,)?))? = $variant_value:literal
             ),* $(,)?
         })*
     } => {
@@ -121,6 +121,13 @@ define_error! {
         AssemblingError(note: String) = "error assembling: {note}",
         /// An error linking was encountered.
         LinkingError(note: String) = "error linking: {note}",
+        /// Mismatched comparison size.
+        MismatchedComparisonSize(v0: Value, cond: Cond, v1: Value) = "mismatched size of comparison {v0:?} {cond} {v1:?}",
+        /// An invalid inline assembly option was passed.
+        InvalidInlineAsmOption(target: String, opt: String, supported: String)
+            = "invalid invalid inline assembly option {opt} for {target}; supports the options {supported}",
+        /// A codegen unit finished early (likely panicked).
+        CodegenUnitFinishedEarly(unit: usize, note: String) = "codegen unit {unit} unexpectedly finished early: {note}",
     }
 }
 

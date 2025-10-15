@@ -504,6 +504,8 @@ pub struct InternalFunctionSignature<'a> {
     pub params: List<'a, (Str<'a>, Type<'a>)>,
     /// The result of the function.
     pub result: Option<RetType<'a>>,
+    /// The entry block.
+    pub entry_block: Str<'a>,
 }
 
 /// An external function signature.
@@ -541,8 +543,6 @@ pub enum FunctionDef<'a> {
         func_vars: List<'a, (Str<'a>, Type<'a>)>,
         /// The code of the function.
         code: List<'a, Block<'a>>,
-        /// The name of the entry block.
-        entry_block: Str<'a>,
     },
 }
 

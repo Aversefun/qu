@@ -2,6 +2,7 @@
 use std::range::RangeInclusive;
 
 use crate::ir::owned::{NoProdInstruction, ProdInstruction, RegRef, Value};
+use crate::{impl_is, impl_unwrap};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
 pub struct Range(pub RangeInclusive<usize>);
@@ -25,16 +26,17 @@ impl PartialOrd for Range {
 pub enum PhysicalRegister {
     Normal {
         id: usize,
-        size: usize,
+        size: u64,
     },
     PartOf {
         id: usize,
-        size: usize,
+        size: u64,
         part_of: &'static [usize],
     },
 }
 
 impl PhysicalRegister {
+    #[must_use]
     pub fn get_id(self) -> usize {
         match self {
             PhysicalRegister::Normal { id, size: _ }
@@ -45,7 +47,8 @@ impl PhysicalRegister {
             } => id,
         }
     }
-    pub fn get_size(self) -> usize {
+    #[must_use]
+    pub fn get_size(self) -> u64 {
         match self {
             PhysicalRegister::Normal { id: _, size }
             | PhysicalRegister::PartOf {
@@ -80,6 +83,11 @@ pub enum OutRegister {
     Spilled,
 }
 
+impl<'a> OutRegister {
+    impl_unwrap!(OutRegister, usize, OutRegister::Reg, reg_id);
+    impl_is!(OutRegister::Spilled, spilled);
+}
+
 impl From<Value> for Option<RegRef> {
     fn from(v: Value) -> Self {
         match v {
@@ -91,61 +99,24 @@ impl From<Value> for Option<RegRef> {
 
 impl From<ProdInstruction> for Vec<RegRef> {
     fn from(value: ProdInstruction) -> Self {
-        use ProdInstruction::*;
+        use ProdInstruction::{Not, DerefPtr, Value, Add, Sub, Mul, Div, Rem, And, Or, Xor, CreatePtr, Phi, Call};
         match value {
-            Add(v0, v1) => [v0.into(), v1.into()]
-                .into_iter()
-                .flat_map(|v: Option<_>| v)
-                .collect(),
-            Sub(v0, v1) => [v0.into(), v1.into()]
-                .into_iter()
-                .flat_map(|v: Option<_>| v)
-                .collect(),
-            Mul(v0, v1) => [v0.into(), v1.into()]
-                .into_iter()
-                .flat_map(|v: Option<_>| v)
-                .collect(),
-            Div(v0, v1) => [v0.into(), v1.into()]
-                .into_iter()
-                .flat_map(|v: Option<_>| v)
-                .collect(),
-            Rem(v0, v1) => [v0.into(), v1.into()]
-                .into_iter()
-                .flat_map(|v: Option<_>| v)
-                .collect(),
-
-            And(v0, v1) => [v0.into(), v1.into()]
-                .into_iter()
-                .flat_map(|v: Option<_>| v)
-                .collect(),
-            Or(v0, v1) => [v0.into(), v1.into()]
-                .into_iter()
-                .flat_map(|v: Option<_>| v)
-                .collect(),
-            Not(v0) => match v0.into() {
+            Not(v0) | DerefPtr(v0) | Value(v0) => match v0.into() {
                 Some(v) => vec![v],
                 None => vec![],
             },
-            Xor(v0, v1) => [v0.into(), v1.into()]
-                .into_iter()
-                .flat_map(|v: Option<_>| v)
+            Add(v0, v1) | Sub(v0, v1) | Mul(v0, v1) | Div(v0, v1) | Rem(v0, v1) | And(v0, v1) | Or(v0, v1) | Xor(v0, v1) => <[Option<RegRef>; 2] as std::iter::IntoIterator>::into_iter([v0.into(), v1.into()]
+                )
+                .flatten()
                 .collect(),
 
-            DerefPtr(v0) => match v0.into() {
-                Some(v) => vec![v],
-                None => vec![],
-            },
             CreatePtr(_) => vec![],
 
             Phi(vrefs) => vrefs,
 
             Call(call) => call.args.into_iter().filter_map(Into::into).collect(),
 
-            Value(v0) => match v0.into() {
-                Some(v) => vec![v],
-                None => vec![],
-            },
-        }
+            }
     }
 }
 
@@ -161,7 +132,7 @@ impl From<NoProdInstruction> for Vec<RegRef> {
                 std::convert::Into::<Vec<_>>::into(val).as_slice(),
             ]
             .concat(),
-            NoProdInstruction::VarDef(_, _) => vec![],
+            NoProdInstruction::VarDef(_, _) | NoProdInstruction::Jmp(_) => vec![],
             NoProdInstruction::Call(call) => call.args.into_iter().filter_map(Into::into).collect(),
             NoProdInstruction::CmpBr {
                 v0,
@@ -169,9 +140,9 @@ impl From<NoProdInstruction> for Vec<RegRef> {
                 v1,
                 b_true: _,
                 b_false: _,
-            } => [v0.into(), v1.into()]
-                .into_iter()
-                .filter_map(|v| v)
+            } => <[Option<RegRef>; 2] as std::iter::IntoIterator>::into_iter([v0.into(), v1.into()]
+                )
+                .flatten()
                 .collect(),
             NoProdInstruction::InlineAssembly {
                 target: _,
@@ -186,7 +157,6 @@ impl From<NoProdInstruction> for Vec<RegRef> {
                     crate::ir::owned::AssemblyOpt::VarToReg(vref, _) => Some(RegRef::Real(vref)),
                 })
                 .collect(),
-            NoProdInstruction::Jmp(_) => vec![],
             NoProdInstruction::Return(v) => match v.and_then(Into::into) {
                 Some(v) => vec![v],
                 None => vec![],
@@ -196,15 +166,15 @@ impl From<NoProdInstruction> for Vec<RegRef> {
 }
 
 /// Do a single iteration of second-chance bin packing.
-pub fn allocate_single<T: AsRef<[(RegRef, usize)]> + Clone>(
+pub fn allocate_single<T: AsRef<[(RegRef, u64)]> + Clone>(
     registers: &[PhysicalRegister],
-    vars: T,
+    vars: &T,
 ) -> Vec<(RegRef, OutRegister)> {
     allocate_single_priv(registers)(&(Range((0..=0).into()), vars)).1
 }
 
 /// Do a single iteration of second-chance bin packing.
-fn allocate_single_priv<T: AsRef<[(RegRef, usize)]> + Clone>(
+fn allocate_single_priv<T: AsRef<[(RegRef, u64)]> + Clone>(
     registers: &[PhysicalRegister],
 ) -> impl Fn(&(Range, T)) -> (Range, Vec<(RegRef, OutRegister)>) {
     move |(range, vars)| {
@@ -227,12 +197,12 @@ fn allocate_single_priv<T: AsRef<[(RegRef, usize)]> + Clone>(
             out.push((var.clone(), OutRegister::Spilled));
         }
 
-        (range.clone(), out)
+        (*range, out)
     }
 }
 
 /// Allocate registers based on the ranges in which they are live.
-pub fn allocate<T: AsRef<[(RegRef, usize)]> + Clone>(
+pub fn allocate<T: AsRef<[(RegRef, u64)]> + Clone>(
     registers: impl AsRef<[PhysicalRegister]>,
     ranges: impl AsRef<[(Range, T)]>,
 ) -> Vec<(Range, Vec<(RegRef, OutRegister)>)> {
@@ -240,7 +210,7 @@ pub fn allocate<T: AsRef<[(RegRef, usize)]> + Clone>(
 
     ranges
         .as_ref()
-        .into_iter()
+        .iter()
         .map(allocate_single_priv(registers))
         .collect::<Vec<_>>()
 }

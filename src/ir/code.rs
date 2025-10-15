@@ -1,5 +1,7 @@
 //! The code itself.
 
+use std::fmt::Display;
+
 use super::{ExtendedVarRef, FunctionCall, Type, Value, VarRef, impl_ir_item};
 use crate::{List, Str, ir::RegRef};
 
@@ -13,6 +15,19 @@ pub enum Cond {
     LessEqual,
     GreaterThan,
     GreaterEqual,
+}
+
+impl Display for Cond {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.write_str(match self {
+            Self::Equal => "==",
+            Self::NotEqual => "!=",
+            Self::LessThan => "<",
+            Self::LessEqual => "<=",
+            Self::GreaterThan => ">",
+            Self::GreaterEqual => ">=",
+        })
+    }
 }
 
 impl_ir_item!(Cond);

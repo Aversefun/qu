@@ -60,7 +60,7 @@ pub trait Codegen<'a>: Default + Debug {
     /// being used, and otherwise return any codegen errors.
     fn compile(
         &mut self,
-        sig: InternalFunctionSignature,
+        sig: &InternalFunctionSignature,
         func_locals: &'a [(String, Type)],
         block: Block,
         is_entry: bool,
@@ -82,7 +82,7 @@ pub trait Codegen<'a>: Default + Debug {
     /// # Errors
     /// This function should NEVER leave the type this is implemented on in an
     /// invalid state or panic. This function should propogate all errors.
-    fn output_asm(&mut self) -> Result<String, CodegenError<'a>> {
+    fn emit_asm(&mut self) -> Result<String, CodegenError<'a>> {
         Err(CodegenError::CannotCompileToAsm)
     }
     /// Produces a binary output after codegen. If needed, this may call
@@ -92,9 +92,9 @@ pub trait Codegen<'a>: Default + Debug {
     /// # Errors
     /// This function should NEVER leave the type this is implemented on in an
     /// invalid state or panic. This function should propogate all errors.
-    fn output_bin(&mut self, temp_dir: PathBuf) -> Result<Vec<u8>, CodegenError<'a>>;
+    fn emit_bin(&mut self, temp_dir: PathBuf) -> Result<Vec<u8>, CodegenError<'a>>;
 }
 
-pub mod x86_64_linux;
+pub mod x86_64_linux_hardfloat;
 
 pub mod register_alloc;

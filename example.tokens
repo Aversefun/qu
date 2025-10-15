@@ -307,43 +307,185 @@
     },
     Token {
         raw: Ident(
-            "repr",
+            "export",
         ),
         loc: example.qir:11:2,
-        len: example.qir at index 4,
+        len: example.qir at index 6,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:11:6,
+        loc: example.qir:11:8,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "C",
         ),
-        loc: example.qir:11:7,
+        loc: example.qir:11:9,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: Comma,
+        loc: example.qir:11:10,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: StrLiteral(
+            Normal,
+            "main",
+        ),
+        loc: example.qir:11:12,
+        len: example.qir at index 6,
+    },
+    Token {
+        raw: CloseParen,
+        loc: example.qir:11:18,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: Function,
+        loc: example.qir:12:1,
+        len: example.qir at index 2,
+    },
+    Token {
+        raw: Ident(
+            "main",
+        ),
+        loc: example.qir:12:4,
+        len: example.qir at index 4,
+    },
+    Token {
+        raw: OpenParen,
+        loc: example.qir:12:8,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: Variable,
+        loc: example.qir:12:9,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: Ident(
+            "argc",
+        ),
+        loc: example.qir:12:10,
+        len: example.qir at index 4,
+    },
+    Token {
+        raw: Colon,
+        loc: example.qir:12:14,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: Ident(
+            "uptr",
+        ),
+        loc: example.qir:12:16,
+        len: example.qir at index 4,
+    },
+    Token {
+        raw: Comma,
+        loc: example.qir:12:20,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: Variable,
+        loc: example.qir:12:22,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: Ident(
+            "argv",
+        ),
+        loc: example.qir:12:23,
+        len: example.qir at index 4,
+    },
+    Token {
+        raw: Colon,
+        loc: example.qir:12:27,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: PointerOrMul,
+        loc: example.qir:12:29,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: OpenSquare,
+        loc: example.qir:12:30,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: Ident(
+            "c_str",
+        ),
+        loc: example.qir:12:31,
+        len: example.qir at index 5,
+    },
+    Token {
+        raw: Semicolon,
+        loc: example.qir:12:36,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: Variable,
+        loc: example.qir:12:38,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: Ident(
+            "argc",
+        ),
+        loc: example.qir:12:39,
+        len: example.qir at index 4,
+    },
+    Token {
+        raw: Property,
+        loc: example.qir:12:43,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: NumericLiteral(
+            "0",
+        ),
+        loc: example.qir:12:44,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: CloseSquare,
+        loc: example.qir:12:45,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:11:8,
+        loc: example.qir:12:46,
         len: example.qir at index 1,
     },
     Token {
-        raw: Struct,
-        loc: example.qir:12:1,
-        len: example.qir at index 6,
+        raw: Returns,
+        loc: example.qir:12:48,
+        len: example.qir at index 2,
+    },
+    Token {
+        raw: Bang,
+        loc: example.qir:12:51,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: BlockRefOrAnd,
+        loc: example.qir:12:53,
+        len: example.qir at index 1,
     },
     Token {
         raw: Ident(
-            "Test",
+            "entry",
         ),
-        loc: example.qir:12:8,
-        len: example.qir at index 4,
+        loc: example.qir:12:54,
+        len: example.qir at index 5,
     },
     Token {
         raw: OpenCurly,
-        loc: example.qir:12:13,
+        loc: example.qir:12:60,
         len: example.qir at index 1,
     },
     Token {
@@ -353,1528 +495,776 @@
     },
     Token {
         raw: Ident(
-            "field0",
+            "v0",
         ),
         loc: example.qir:13:6,
-        len: example.qir at index 6,
+        len: example.qir at index 2,
     },
     Token {
         raw: Colon,
-        loc: example.qir:13:12,
+        loc: example.qir:13:8,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
-            "u8",
+            "i32",
         ),
-        loc: example.qir:13:14,
-        len: example.qir at index 2,
+        loc: example.qir:13:10,
+        len: example.qir at index 3,
     },
     Token {
-        raw: Comma,
-        loc: example.qir:13:16,
+        raw: Semicolon,
+        loc: example.qir:13:13,
         len: example.qir at index 1,
     },
     Token {
-        raw: Variable,
+        raw: BlockRefOrAnd,
         loc: example.qir:14:5,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
-            "field1",
+            "entry",
         ),
         loc: example.qir:14:6,
-        len: example.qir at index 6,
+        len: example.qir at index 5,
     },
     Token {
-        raw: Colon,
+        raw: OpenCurly,
         loc: example.qir:14:12,
         len: example.qir at index 1,
     },
     Token {
-        raw: Ident(
-            "u16",
-        ),
-        loc: example.qir:14:14,
-        len: example.qir at index 3,
-    },
-    Token {
-        raw: Comma,
-        loc: example.qir:14:17,
-        len: example.qir at index 1,
-    },
-    Token {
         raw: Variable,
-        loc: example.qir:15:5,
+        loc: example.qir:15:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
-            "field2",
+            "v0",
         ),
-        loc: example.qir:15:6,
-        len: example.qir at index 6,
+        loc: example.qir:15:10,
+        len: example.qir at index 2,
     },
     Token {
-        raw: Colon,
+        raw: Property,
         loc: example.qir:15:12,
         len: example.qir at index 1,
     },
     Token {
-        raw: Ident(
-            "f32",
+        raw: NumericLiteral(
+            "1",
         ),
-        loc: example.qir:15:14,
-        len: example.qir at index 3,
+        loc: example.qir:15:13,
+        len: example.qir at index 1,
     },
     Token {
-        raw: Comma,
+        raw: Assign,
+        loc: example.qir:15:15,
+        len: example.qir at index 1,
+    },
+    Token {
+        raw: NumericLiteral(
+            "0",
+        ),
         loc: example.qir:15:17,
         len: example.qir at index 1,
     },
     Token {
-        raw: Variable,
-        loc: example.qir:16:5,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "length",
-        ),
-        loc: example.qir:16:6,
-        len: example.qir at index 6,
-    },
-    Token {
-        raw: Colon,
-        loc: example.qir:16:12,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "uptr",
-        ),
-        loc: example.qir:16:14,
-        len: example.qir at index 4,
-    },
-    Token {
-        raw: Comma,
-        loc: example.qir:16:18,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:17:5,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "field3",
-        ),
-        loc: example.qir:17:6,
-        len: example.qir at index 6,
-    },
-    Token {
-        raw: Colon,
-        loc: example.qir:17:12,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: PointerOrMul,
-        loc: example.qir:17:14,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: OpenSquare,
-        loc: example.qir:17:15,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "Test",
-        ),
-        loc: example.qir:17:16,
-        len: example.qir at index 4,
-    },
-    Token {
         raw: Semicolon,
-        loc: example.qir:17:20,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:17:22,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "length",
-        ),
-        loc: example.qir:17:23,
-        len: example.qir at index 6,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:17:29,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "0",
-        ),
-        loc: example.qir:17:30,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: CloseSquare,
-        loc: example.qir:17:31,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Comma,
-        loc: example.qir:17:32,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: CloseCurly,
-        loc: example.qir:18:1,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: ItemAnnotation,
-        loc: example.qir:20:1,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "export",
-        ),
-        loc: example.qir:20:2,
-        len: example.qir at index 6,
-    },
-    Token {
-        raw: OpenParen,
-        loc: example.qir:20:8,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "C",
-        ),
-        loc: example.qir:20:9,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Comma,
-        loc: example.qir:20:10,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: StrLiteral(
-            Normal,
-            "main",
-        ),
-        loc: example.qir:20:12,
-        len: example.qir at index 6,
-    },
-    Token {
-        raw: CloseParen,
-        loc: example.qir:20:18,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Function,
-        loc: example.qir:21:1,
-        len: example.qir at index 2,
-    },
-    Token {
-        raw: Ident(
-            "main",
-        ),
-        loc: example.qir:21:4,
-        len: example.qir at index 4,
-    },
-    Token {
-        raw: OpenParen,
-        loc: example.qir:21:8,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:21:9,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "argc",
-        ),
-        loc: example.qir:21:10,
-        len: example.qir at index 4,
-    },
-    Token {
-        raw: Colon,
-        loc: example.qir:21:14,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "uptr",
-        ),
-        loc: example.qir:21:16,
-        len: example.qir at index 4,
-    },
-    Token {
-        raw: Comma,
-        loc: example.qir:21:20,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:21:22,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "argv",
-        ),
-        loc: example.qir:21:23,
-        len: example.qir at index 4,
-    },
-    Token {
-        raw: Colon,
-        loc: example.qir:21:27,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: PointerOrMul,
-        loc: example.qir:21:29,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: OpenSquare,
-        loc: example.qir:21:30,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "c_str",
-        ),
-        loc: example.qir:21:31,
-        len: example.qir at index 5,
-    },
-    Token {
-        raw: Semicolon,
-        loc: example.qir:21:36,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:21:38,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "argc",
-        ),
-        loc: example.qir:21:39,
-        len: example.qir at index 4,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:21:43,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "0",
-        ),
-        loc: example.qir:21:44,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: CloseSquare,
-        loc: example.qir:21:45,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: CloseParen,
-        loc: example.qir:21:46,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Returns,
-        loc: example.qir:21:48,
-        len: example.qir at index 2,
-    },
-    Token {
-        raw: Bang,
-        loc: example.qir:21:51,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: BlockRefOrAnd,
-        loc: example.qir:21:53,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "entry",
-        ),
-        loc: example.qir:21:54,
-        len: example.qir at index 5,
-    },
-    Token {
-        raw: OpenCurly,
-        loc: example.qir:21:60,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:22:5,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "v0",
-        ),
-        loc: example.qir:22:6,
-        len: example.qir at index 2,
-    },
-    Token {
-        raw: Colon,
-        loc: example.qir:22:8,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "i32",
-        ),
-        loc: example.qir:22:10,
-        len: example.qir at index 3,
-    },
-    Token {
-        raw: Semicolon,
-        loc: example.qir:22:13,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:23:5,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "m0",
-        ),
-        loc: example.qir:23:6,
-        len: example.qir at index 2,
-    },
-    Token {
-        raw: Colon,
-        loc: example.qir:23:8,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Mem,
-        loc: example.qir:23:10,
-        len: example.qir at index 3,
-    },
-    Token {
-        raw: Ident(
-            "i32",
-        ),
-        loc: example.qir:23:14,
-        len: example.qir at index 3,
-    },
-    Token {
-        raw: Semicolon,
-        loc: example.qir:23:17,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:24:5,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "s0",
-        ),
-        loc: example.qir:24:6,
-        len: example.qir at index 2,
-    },
-    Token {
-        raw: Colon,
-        loc: example.qir:24:8,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "Test",
-        ),
-        loc: example.qir:24:10,
-        len: example.qir at index 4,
-    },
-    Token {
-        raw: Semicolon,
-        loc: example.qir:24:14,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: BlockRefOrAnd,
-        loc: example.qir:25:5,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "entry",
-        ),
-        loc: example.qir:25:6,
-        len: example.qir at index 5,
-    },
-    Token {
-        raw: OpenCurly,
-        loc: example.qir:25:12,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:26:9,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "v0",
-        ),
-        loc: example.qir:26:10,
-        len: example.qir at index 2,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:26:12,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "1",
-        ),
-        loc: example.qir:26:13,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Assign,
-        loc: example.qir:26:15,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "0",
-        ),
-        loc: example.qir:26:17,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Semicolon,
-        loc: example.qir:26:18,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:27:9,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "m0",
-        ),
-        loc: example.qir:27:10,
-        len: example.qir at index 2,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:27:12,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Drop,
-        loc: example.qir:27:13,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Assign,
-        loc: example.qir:27:15,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "1",
-        ),
-        loc: example.qir:27:17,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Semicolon,
-        loc: example.qir:27:18,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:28:9,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "s0",
-        ),
-        loc: example.qir:28:10,
-        len: example.qir at index 2,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:28:12,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "0",
-        ),
-        loc: example.qir:28:13,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:28:14,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "field0",
-        ),
-        loc: example.qir:28:15,
-        len: example.qir at index 6,
-    },
-    Token {
-        raw: Assign,
-        loc: example.qir:28:22,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "0",
-        ),
-        loc: example.qir:28:24,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Semicolon,
-        loc: example.qir:28:25,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:29:9,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "s0",
-        ),
-        loc: example.qir:29:10,
-        len: example.qir at index 2,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:29:12,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "0",
-        ),
-        loc: example.qir:29:13,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:29:14,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "field1",
-        ),
-        loc: example.qir:29:15,
-        len: example.qir at index 6,
-    },
-    Token {
-        raw: Assign,
-        loc: example.qir:29:22,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "0",
-        ),
-        loc: example.qir:29:24,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Semicolon,
-        loc: example.qir:29:25,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:30:9,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "s0",
-        ),
-        loc: example.qir:30:10,
-        len: example.qir at index 2,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:30:12,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "0",
-        ),
-        loc: example.qir:30:13,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:30:14,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "field2",
-        ),
-        loc: example.qir:30:15,
-        len: example.qir at index 6,
-    },
-    Token {
-        raw: Assign,
-        loc: example.qir:30:22,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "0.0",
-        ),
-        loc: example.qir:30:24,
-        len: example.qir at index 3,
-    },
-    Token {
-        raw: Semicolon,
-        loc: example.qir:30:27,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:31:9,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "s0",
-        ),
-        loc: example.qir:31:10,
-        len: example.qir at index 2,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:31:12,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "0",
-        ),
-        loc: example.qir:31:13,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:31:14,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "length",
-        ),
-        loc: example.qir:31:15,
-        len: example.qir at index 6,
-    },
-    Token {
-        raw: Assign,
-        loc: example.qir:31:22,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "0",
-        ),
-        loc: example.qir:31:24,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Semicolon,
-        loc: example.qir:31:25,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Variable,
-        loc: example.qir:32:9,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "s0",
-        ),
-        loc: example.qir:32:10,
-        len: example.qir at index 2,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:32:12,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: NumericLiteral(
-            "0",
-        ),
-        loc: example.qir:32:13,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Property,
-        loc: example.qir:32:14,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Ident(
-            "field3",
-        ),
-        loc: example.qir:32:15,
-        len: example.qir at index 6,
-    },
-    Token {
-        raw: Assign,
-        loc: example.qir:32:22,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: BlockRefOrAnd,
-        loc: example.qir:32:24,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Drop,
-        loc: example.qir:32:25,
-        len: example.qir at index 1,
-    },
-    Token {
-        raw: Semicolon,
-        loc: example.qir:32:26,
+        loc: example.qir:15:18,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "x86_64",
         ),
-        loc: example.qir:33:9,
+        loc: example.qir:16:9,
         len: example.qir at index 6,
     },
     Token {
         raw: Colon,
-        loc: example.qir:33:15,
+        loc: example.qir:16:15,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "intel",
         ),
-        loc: example.qir:33:16,
+        loc: example.qir:16:16,
         len: example.qir at index 5,
     },
     Token {
         raw: OpenSquare,
-        loc: example.qir:33:22,
+        loc: example.qir:16:22,
         len: example.qir at index 1,
     },
     Token {
         raw: InlineAssemblyContents(
             " ; Will be skipped over on other architectures.\n            ; Inline assembly\n            add eax, 8\n        ",
         ),
-        loc: example.qir:33:23,
+        loc: example.qir:16:23,
         len: example.qir at index 108,
     },
     Token {
         raw: CloseSquare,
-        loc: example.qir:33:132,
+        loc: example.qir:16:132,
         len: example.qir at index 1,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:33:134,
+        loc: example.qir:16:134,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:34:13,
+        loc: example.qir:17:13,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v0",
         ),
-        loc: example.qir:34:14,
+        loc: example.qir:17:14,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:34:16,
+        loc: example.qir:17:16,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "1",
         ),
-        loc: example.qir:34:17,
+        loc: example.qir:17:17,
         len: example.qir at index 1,
     },
     Token {
         raw: Colon,
-        loc: example.qir:34:18,
+        loc: example.qir:17:18,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "eax",
         ),
-        loc: example.qir:34:19,
+        loc: example.qir:17:19,
         len: example.qir at index 3,
     },
     Token {
         raw: Comma,
-        loc: example.qir:34:22,
+        loc: example.qir:17:22,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "eax",
         ),
-        loc: example.qir:35:13,
+        loc: example.qir:18:13,
         len: example.qir at index 3,
     },
     Token {
         raw: Colon,
-        loc: example.qir:35:16,
+        loc: example.qir:18:16,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:35:17,
+        loc: example.qir:18:17,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v0",
         ),
-        loc: example.qir:35:18,
+        loc: example.qir:18:18,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:35:20,
+        loc: example.qir:18:20,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "2",
         ),
-        loc: example.qir:35:21,
+        loc: example.qir:18:21,
         len: example.qir at index 1,
     },
     Token {
         raw: Comma,
-        loc: example.qir:35:22,
+        loc: example.qir:18:22,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "_opt",
         ),
-        loc: example.qir:40:13,
+        loc: example.qir:23:13,
         len: example.qir at index 4,
     },
     Token {
         raw: Colon,
-        loc: example.qir:40:17,
+        loc: example.qir:23:17,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "noflags",
         ),
-        loc: example.qir:40:18,
+        loc: example.qir:23:18,
         len: example.qir at index 7,
     },
     Token {
         raw: Comma,
-        loc: example.qir:40:25,
+        loc: example.qir:23:25,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "_opt",
         ),
-        loc: example.qir:43:13,
+        loc: example.qir:26:13,
         len: example.qir at index 4,
     },
     Token {
         raw: Colon,
-        loc: example.qir:43:17,
+        loc: example.qir:26:17,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "pure",
         ),
-        loc: example.qir:43:18,
+        loc: example.qir:26:18,
         len: example.qir at index 4,
     },
     Token {
         raw: Comma,
-        loc: example.qir:43:22,
+        loc: example.qir:26:22,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "_opt",
         ),
-        loc: example.qir:45:13,
+        loc: example.qir:28:13,
         len: example.qir at index 4,
     },
     Token {
         raw: Colon,
-        loc: example.qir:45:17,
+        loc: example.qir:28:17,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "nomem",
         ),
-        loc: example.qir:45:18,
+        loc: example.qir:28:18,
         len: example.qir at index 5,
     },
     Token {
         raw: Comma,
-        loc: example.qir:45:23,
+        loc: example.qir:28:23,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "_opt",
         ),
-        loc: example.qir:47:13,
+        loc: example.qir:30:13,
         len: example.qir at index 4,
     },
     Token {
         raw: Colon,
-        loc: example.qir:47:17,
+        loc: example.qir:30:17,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "nostack",
         ),
-        loc: example.qir:47:18,
+        loc: example.qir:30:18,
         len: example.qir at index 7,
     },
     Token {
         raw: Comma,
-        loc: example.qir:47:25,
+        loc: example.qir:30:25,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:48:9,
+        loc: example.qir:31:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:48:10,
+        loc: example.qir:31:10,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "x86_64",
         ),
-        loc: example.qir:49:9,
+        loc: example.qir:32:9,
         len: example.qir at index 6,
     },
     Token {
         raw: Colon,
-        loc: example.qir:49:15,
+        loc: example.qir:32:15,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "intel",
         ),
-        loc: example.qir:49:16,
+        loc: example.qir:32:16,
         len: example.qir at index 5,
     },
     Token {
         raw: OpenSquare,
-        loc: example.qir:49:22,
+        loc: example.qir:32:22,
         len: example.qir at index 1,
     },
     Token {
         raw: InlineAssemblyContents(
             " ; Inline assembly block without options\n            ; Inline assembly\n            nop\n        ",
         ),
-        loc: example.qir:49:23,
+        loc: example.qir:32:23,
         len: example.qir at index 94,
     },
     Token {
         raw: CloseSquare,
-        loc: example.qir:49:118,
+        loc: example.qir:32:118,
         len: example.qir at index 1,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:49:120,
+        loc: example.qir:32:120,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:49:121,
+        loc: example.qir:32:121,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:49:122,
+        loc: example.qir:32:122,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:50:9,
+        loc: example.qir:33:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v0",
         ),
-        loc: example.qir:50:10,
+        loc: example.qir:33:10,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:50:12,
+        loc: example.qir:33:12,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "3",
         ),
-        loc: example.qir:50:13,
+        loc: example.qir:33:13,
         len: example.qir at index 1,
     },
     Token {
         raw: Assign,
-        loc: example.qir:50:15,
+        loc: example.qir:33:15,
         len: example.qir at index 1,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:50:17,
+        loc: example.qir:33:17,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "phi",
         ),
-        loc: example.qir:50:18,
+        loc: example.qir:33:18,
         len: example.qir at index 3,
     },
     Token {
         raw: Variable,
-        loc: example.qir:50:22,
+        loc: example.qir:33:22,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v0",
         ),
-        loc: example.qir:50:23,
+        loc: example.qir:33:23,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:50:25,
+        loc: example.qir:33:25,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "1",
         ),
-        loc: example.qir:50:26,
+        loc: example.qir:33:26,
         len: example.qir at index 1,
     },
     Token {
         raw: Comma,
-        loc: example.qir:50:27,
+        loc: example.qir:33:27,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:50:29,
+        loc: example.qir:33:29,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v0",
         ),
-        loc: example.qir:50:30,
+        loc: example.qir:33:30,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:50:32,
+        loc: example.qir:33:32,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "2",
         ),
-        loc: example.qir:50:33,
+        loc: example.qir:33:33,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:50:34,
+        loc: example.qir:33:34,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:50:35,
+        loc: example.qir:33:35,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:51:9,
+        loc: example.qir:34:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v1",
         ),
-        loc: example.qir:51:10,
+        loc: example.qir:34:10,
         len: example.qir at index 2,
     },
     Token {
         raw: Colon,
-        loc: example.qir:51:12,
+        loc: example.qir:34:12,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "u32",
         ),
-        loc: example.qir:51:14,
+        loc: example.qir:34:14,
         len: example.qir at index 3,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:51:17,
+        loc: example.qir:34:17,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:52:9,
+        loc: example.qir:35:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v1",
         ),
-        loc: example.qir:52:10,
+        loc: example.qir:35:10,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:52:12,
+        loc: example.qir:35:12,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "0",
         ),
-        loc: example.qir:52:13,
+        loc: example.qir:35:13,
         len: example.qir at index 1,
     },
     Token {
         raw: Assign,
-        loc: example.qir:52:15,
+        loc: example.qir:35:15,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "add",
         ),
-        loc: example.qir:52:17,
+        loc: example.qir:35:17,
         len: example.qir at index 3,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:52:20,
+        loc: example.qir:35:20,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:52:21,
+        loc: example.qir:35:21,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "argc",
         ),
-        loc: example.qir:52:22,
+        loc: example.qir:35:22,
         len: example.qir at index 4,
     },
     Token {
         raw: Property,
-        loc: example.qir:52:26,
+        loc: example.qir:35:26,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "0",
         ),
-        loc: example.qir:52:27,
+        loc: example.qir:35:27,
         len: example.qir at index 1,
     },
     Token {
         raw: Comma,
-        loc: example.qir:52:28,
+        loc: example.qir:35:28,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "50",
         ),
-        loc: example.qir:52:30,
+        loc: example.qir:35:30,
         len: example.qir at index 2,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:52:32,
+        loc: example.qir:35:32,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:52:33,
+        loc: example.qir:35:33,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:53:9,
+        loc: example.qir:36:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v1",
         ),
-        loc: example.qir:53:10,
+        loc: example.qir:36:10,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:53:12,
+        loc: example.qir:36:12,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "1",
         ),
-        loc: example.qir:53:13,
+        loc: example.qir:36:13,
         len: example.qir at index 1,
     },
     Token {
         raw: Assign,
-        loc: example.qir:53:15,
+        loc: example.qir:36:15,
         len: example.qir at index 1,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:53:17,
+        loc: example.qir:36:17,
         len: example.qir at index 1,
     },
     Token {
         raw: Rem,
-        loc: example.qir:53:18,
+        loc: example.qir:36:18,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:53:20,
+        loc: example.qir:36:20,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v1",
         ),
-        loc: example.qir:53:21,
+        loc: example.qir:36:21,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:53:23,
+        loc: example.qir:36:23,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "0",
         ),
-        loc: example.qir:53:24,
+        loc: example.qir:36:24,
         len: example.qir at index 1,
     },
     Token {
         raw: Comma,
-        loc: example.qir:53:25,
+        loc: example.qir:36:25,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "50",
         ),
-        loc: example.qir:53:27,
+        loc: example.qir:36:27,
         len: example.qir at index 2,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:53:29,
+        loc: example.qir:36:29,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:53:30,
+        loc: example.qir:36:30,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:54:9,
+        loc: example.qir:37:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v1",
         ),
-        loc: example.qir:54:10,
+        loc: example.qir:37:10,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:54:12,
+        loc: example.qir:37:12,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "2",
         ),
-        loc: example.qir:54:13,
+        loc: example.qir:37:13,
         len: example.qir at index 1,
     },
     Token {
         raw: Assign,
-        loc: example.qir:54:15,
+        loc: example.qir:37:15,
         len: example.qir at index 1,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:54:17,
+        loc: example.qir:37:17,
         len: example.qir at index 1,
     },
     Token {
         raw: Sub,
-        loc: example.qir:54:18,
+        loc: example.qir:37:18,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "10",
         ),
-        loc: example.qir:54:20,
+        loc: example.qir:37:20,
         len: example.qir at index 2,
     },
     Token {
         raw: Comma,
-        loc: example.qir:54:22,
+        loc: example.qir:37:22,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:54:24,
+        loc: example.qir:37:24,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v1",
         ),
-        loc: example.qir:54:25,
+        loc: example.qir:37:25,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:54:27,
+        loc: example.qir:37:27,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "1",
         ),
-        loc: example.qir:54:28,
+        loc: example.qir:37:28,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:54:29,
+        loc: example.qir:37:29,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:54:30,
+        loc: example.qir:37:30,
         len: example.qir at index 1,
     },
     Token {
         raw: Drop,
-        loc: example.qir:56:9,
+        loc: example.qir:39:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Assign,
-        loc: example.qir:56:11,
+        loc: example.qir:39:11,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "libc_printf",
         ),
-        loc: example.qir:56:13,
+        loc: example.qir:39:13,
         len: example.qir at index 11,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:56:24,
+        loc: example.qir:39:24,
         len: example.qir at index 1,
     },
     Token {
@@ -1882,160 +1272,160 @@
             C,
             "argc=%d",
         ),
-        loc: example.qir:56:25,
+        loc: example.qir:39:25,
         len: example.qir at index 10,
     },
     Token {
         raw: Comma,
-        loc: example.qir:56:35,
+        loc: example.qir:39:35,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:56:37,
+        loc: example.qir:39:37,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v1",
         ),
-        loc: example.qir:56:38,
+        loc: example.qir:39:38,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:56:40,
+        loc: example.qir:39:40,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "2",
         ),
-        loc: example.qir:56:41,
+        loc: example.qir:39:41,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:56:42,
+        loc: example.qir:39:42,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:56:43,
+        loc: example.qir:39:43,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "no_return_function",
         ),
-        loc: example.qir:57:9,
+        loc: example.qir:40:9,
         len: example.qir at index 18,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:57:27,
+        loc: example.qir:40:27,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:57:28,
+        loc: example.qir:40:28,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:57:29,
+        loc: example.qir:40:29,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:58:9,
+        loc: example.qir:41:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v2",
         ),
-        loc: example.qir:58:10,
+        loc: example.qir:41:10,
         len: example.qir at index 2,
     },
     Token {
         raw: Colon,
-        loc: example.qir:58:12,
+        loc: example.qir:41:12,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "uptr",
         ),
-        loc: example.qir:58:14,
+        loc: example.qir:41:14,
         len: example.qir at index 4,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:58:18,
+        loc: example.qir:41:18,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:59:9,
+        loc: example.qir:42:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v2",
         ),
-        loc: example.qir:59:10,
+        loc: example.qir:42:10,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:59:12,
+        loc: example.qir:42:12,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "0",
         ),
-        loc: example.qir:59:13,
+        loc: example.qir:42:13,
         len: example.qir at index 1,
     },
     Token {
         raw: Assign,
-        loc: example.qir:59:15,
+        loc: example.qir:42:15,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "11",
         ),
-        loc: example.qir:59:17,
+        loc: example.qir:42:17,
         len: example.qir at index 2,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:59:19,
+        loc: example.qir:42:19,
         len: example.qir at index 1,
     },
     Token {
         raw: Drop,
-        loc: example.qir:60:9,
+        loc: example.qir:43:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Assign,
-        loc: example.qir:60:11,
+        loc: example.qir:43:11,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "libc_printf",
         ),
-        loc: example.qir:60:13,
+        loc: example.qir:43:13,
         len: example.qir at index 11,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:60:24,
+        loc: example.qir:43:24,
         len: example.qir at index 1,
     },
     Token {
@@ -2043,199 +1433,199 @@
             C,
             "v2=%d",
         ),
-        loc: example.qir:60:25,
+        loc: example.qir:43:25,
         len: example.qir at index 8,
     },
     Token {
         raw: Comma,
-        loc: example.qir:60:33,
+        loc: example.qir:43:33,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:60:35,
+        loc: example.qir:43:35,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v2",
         ),
-        loc: example.qir:60:36,
+        loc: example.qir:43:36,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:60:38,
+        loc: example.qir:43:38,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "0",
         ),
-        loc: example.qir:60:39,
+        loc: example.qir:43:39,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:60:40,
+        loc: example.qir:43:40,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:60:41,
+        loc: example.qir:43:41,
         len: example.qir at index 1,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:61:9,
+        loc: example.qir:44:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "cmpbr",
         ),
-        loc: example.qir:61:10,
+        loc: example.qir:44:10,
         len: example.qir at index 5,
     },
     Token {
         raw: Variable,
-        loc: example.qir:61:16,
+        loc: example.qir:44:16,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v1",
         ),
-        loc: example.qir:61:17,
+        loc: example.qir:44:17,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:61:19,
+        loc: example.qir:44:19,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "2",
         ),
-        loc: example.qir:61:20,
+        loc: example.qir:44:20,
         len: example.qir at index 1,
     },
     Token {
         raw: Comma,
-        loc: example.qir:61:21,
+        loc: example.qir:44:21,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "eq",
         ),
-        loc: example.qir:61:23,
+        loc: example.qir:44:23,
         len: example.qir at index 2,
     },
     Token {
         raw: Comma,
-        loc: example.qir:61:25,
+        loc: example.qir:44:25,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "9",
         ),
-        loc: example.qir:61:27,
+        loc: example.qir:44:27,
         len: example.qir at index 1,
     },
     Token {
         raw: Comma,
-        loc: example.qir:61:28,
+        loc: example.qir:44:28,
         len: example.qir at index 1,
     },
     Token {
         raw: BlockRefOrAnd,
-        loc: example.qir:61:30,
+        loc: example.qir:44:30,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "true",
         ),
-        loc: example.qir:61:31,
+        loc: example.qir:44:31,
         len: example.qir at index 4,
     },
     Token {
         raw: Comma,
-        loc: example.qir:61:35,
+        loc: example.qir:44:35,
         len: example.qir at index 1,
     },
     Token {
         raw: BlockRefOrAnd,
-        loc: example.qir:61:37,
+        loc: example.qir:44:37,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "end",
         ),
-        loc: example.qir:61:38,
+        loc: example.qir:44:38,
         len: example.qir at index 3,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:61:41,
+        loc: example.qir:44:41,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:61:42,
+        loc: example.qir:44:42,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseCurly,
-        loc: example.qir:62:5,
+        loc: example.qir:45:5,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:62:6,
+        loc: example.qir:45:6,
         len: example.qir at index 1,
     },
     Token {
         raw: BlockRefOrAnd,
-        loc: example.qir:63:5,
+        loc: example.qir:46:5,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "true",
         ),
-        loc: example.qir:63:6,
+        loc: example.qir:46:6,
         len: example.qir at index 4,
     },
     Token {
         raw: OpenCurly,
-        loc: example.qir:63:11,
+        loc: example.qir:46:11,
         len: example.qir at index 1,
     },
     Token {
         raw: Drop,
-        loc: example.qir:64:9,
+        loc: example.qir:47:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Assign,
-        loc: example.qir:64:11,
+        loc: example.qir:47:11,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "libc_printf",
         ),
-        loc: example.qir:64:13,
+        loc: example.qir:47:13,
         len: example.qir at index 11,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:64:24,
+        loc: example.qir:47:24,
         len: example.qir at index 1,
     },
     Token {
@@ -2243,100 +1633,100 @@
             C,
             "one argument passed",
         ),
-        loc: example.qir:64:25,
+        loc: example.qir:47:25,
         len: example.qir at index 22,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:64:47,
+        loc: example.qir:47:47,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:64:48,
+        loc: example.qir:47:48,
         len: example.qir at index 1,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:65:9,
+        loc: example.qir:48:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "jmp",
         ),
-        loc: example.qir:65:10,
+        loc: example.qir:48:10,
         len: example.qir at index 3,
     },
     Token {
         raw: BlockRefOrAnd,
-        loc: example.qir:65:14,
+        loc: example.qir:48:14,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "end",
         ),
-        loc: example.qir:65:15,
+        loc: example.qir:48:15,
         len: example.qir at index 3,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:65:18,
+        loc: example.qir:48:18,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:65:19,
+        loc: example.qir:48:19,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseCurly,
-        loc: example.qir:66:5,
+        loc: example.qir:49:5,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:66:6,
+        loc: example.qir:49:6,
         len: example.qir at index 1,
     },
     Token {
         raw: BlockRefOrAnd,
-        loc: example.qir:67:5,
+        loc: example.qir:50:5,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "end",
         ),
-        loc: example.qir:67:6,
+        loc: example.qir:50:6,
         len: example.qir at index 3,
     },
     Token {
         raw: OpenCurly,
-        loc: example.qir:67:10,
+        loc: example.qir:50:10,
         len: example.qir at index 1,
     },
     Token {
         raw: Drop,
-        loc: example.qir:68:9,
+        loc: example.qir:51:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Assign,
-        loc: example.qir:68:11,
+        loc: example.qir:51:11,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "libc_printf",
         ),
-        loc: example.qir:68:13,
+        loc: example.qir:51:13,
         len: example.qir at index 11,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:68:24,
+        loc: example.qir:51:24,
         len: example.qir at index 1,
     },
     Token {
@@ -2344,168 +1734,168 @@
             C,
             "v0=%d on x86_64 v0 should be 8 and on others should be 0",
         ),
-        loc: example.qir:68:25,
+        loc: example.qir:51:25,
         len: example.qir at index 59,
     },
     Token {
         raw: Comma,
-        loc: example.qir:68:84,
+        loc: example.qir:51:84,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:68:86,
+        loc: example.qir:51:86,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "v0",
         ),
-        loc: example.qir:68:87,
+        loc: example.qir:51:87,
         len: example.qir at index 2,
     },
     Token {
         raw: Property,
-        loc: example.qir:68:89,
+        loc: example.qir:51:89,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "3",
         ),
-        loc: example.qir:68:90,
+        loc: example.qir:51:90,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:68:91,
+        loc: example.qir:51:91,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:68:92,
+        loc: example.qir:51:92,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "libc_exit",
         ),
-        loc: example.qir:69:9,
+        loc: example.qir:52:9,
         len: example.qir at index 9,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:69:18,
+        loc: example.qir:52:18,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "0",
         ),
-        loc: example.qir:69:19,
+        loc: example.qir:52:19,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:69:20,
+        loc: example.qir:52:20,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:69:21,
+        loc: example.qir:52:21,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseCurly,
-        loc: example.qir:70:5,
+        loc: example.qir:53:5,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:70:6,
+        loc: example.qir:53:6,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseCurly,
-        loc: example.qir:71:1,
+        loc: example.qir:54:1,
         len: example.qir at index 1,
     },
     Token {
         raw: Function,
-        loc: example.qir:73:1,
+        loc: example.qir:56:1,
         len: example.qir at index 2,
     },
     Token {
         raw: Ident(
             "no_return_function",
         ),
-        loc: example.qir:73:4,
+        loc: example.qir:56:4,
         len: example.qir at index 18,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:73:22,
+        loc: example.qir:56:22,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:73:23,
+        loc: example.qir:56:23,
         len: example.qir at index 1,
     },
     Token {
         raw: BlockRefOrAnd,
-        loc: example.qir:73:25,
+        loc: example.qir:56:25,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "entry",
         ),
-        loc: example.qir:73:26,
+        loc: example.qir:56:26,
         len: example.qir at index 5,
     },
     Token {
         raw: OpenCurly,
-        loc: example.qir:73:32,
+        loc: example.qir:56:32,
         len: example.qir at index 1,
     },
     Token {
         raw: BlockRefOrAnd,
-        loc: example.qir:74:5,
+        loc: example.qir:57:5,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "entry",
         ),
-        loc: example.qir:74:6,
+        loc: example.qir:57:6,
         len: example.qir at index 5,
     },
     Token {
         raw: OpenCurly,
-        loc: example.qir:74:12,
+        loc: example.qir:57:12,
         len: example.qir at index 1,
     },
     Token {
         raw: Drop,
-        loc: example.qir:75:9,
+        loc: example.qir:58:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Assign,
-        loc: example.qir:75:11,
+        loc: example.qir:58:11,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "libc_printf",
         ),
-        loc: example.qir:75:13,
+        loc: example.qir:58:13,
         len: example.qir at index 11,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:75:24,
+        loc: example.qir:58:24,
         len: example.qir at index 1,
     },
     Token {
@@ -2513,398 +1903,398 @@
             C,
             "this is from no_return_function",
         ),
-        loc: example.qir:75:25,
+        loc: example.qir:58:25,
         len: example.qir at index 34,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:75:59,
+        loc: example.qir:58:59,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:75:60,
+        loc: example.qir:58:60,
         len: example.qir at index 1,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:76:9,
+        loc: example.qir:59:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "ret",
         ),
-        loc: example.qir:76:10,
+        loc: example.qir:59:10,
         len: example.qir at index 3,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:76:13,
+        loc: example.qir:59:13,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:76:14,
+        loc: example.qir:59:14,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseCurly,
-        loc: example.qir:77:5,
+        loc: example.qir:60:5,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseCurly,
-        loc: example.qir:78:1,
+        loc: example.qir:61:1,
         len: example.qir at index 1,
     },
     Token {
         raw: ItemAnnotation,
-        loc: example.qir:80:1,
+        loc: example.qir:63:1,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "hint",
         ),
-        loc: example.qir:80:2,
+        loc: example.qir:63:2,
         len: example.qir at index 4,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:80:6,
+        loc: example.qir:63:6,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "inline",
         ),
-        loc: example.qir:80:7,
+        loc: example.qir:63:7,
         len: example.qir at index 6,
     },
     Token {
         raw: Colon,
-        loc: example.qir:80:13,
+        loc: example.qir:63:13,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "always",
         ),
-        loc: example.qir:80:14,
+        loc: example.qir:63:14,
         len: example.qir at index 6,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:80:20,
+        loc: example.qir:63:20,
         len: example.qir at index 1,
     },
     Token {
         raw: Function,
-        loc: example.qir:81:1,
+        loc: example.qir:64:1,
         len: example.qir at index 2,
     },
     Token {
         raw: Ident(
             "add",
         ),
-        loc: example.qir:81:4,
+        loc: example.qir:64:4,
         len: example.qir at index 3,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:81:7,
+        loc: example.qir:64:7,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:81:8,
+        loc: example.qir:64:8,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "a",
         ),
-        loc: example.qir:81:9,
+        loc: example.qir:64:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Colon,
-        loc: example.qir:81:10,
+        loc: example.qir:64:10,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "u32",
         ),
-        loc: example.qir:81:12,
+        loc: example.qir:64:12,
         len: example.qir at index 3,
     },
     Token {
         raw: Comma,
-        loc: example.qir:81:15,
+        loc: example.qir:64:15,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:81:17,
+        loc: example.qir:64:17,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "b",
         ),
-        loc: example.qir:81:18,
+        loc: example.qir:64:18,
         len: example.qir at index 1,
     },
     Token {
         raw: Colon,
-        loc: example.qir:81:19,
+        loc: example.qir:64:19,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "u32",
         ),
-        loc: example.qir:81:21,
+        loc: example.qir:64:21,
         len: example.qir at index 3,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:81:24,
+        loc: example.qir:64:24,
         len: example.qir at index 1,
     },
     Token {
         raw: Returns,
-        loc: example.qir:81:26,
+        loc: example.qir:64:26,
         len: example.qir at index 2,
     },
     Token {
         raw: Ident(
             "u32",
         ),
-        loc: example.qir:81:29,
+        loc: example.qir:64:29,
         len: example.qir at index 3,
     },
     Token {
         raw: BlockRefOrAnd,
-        loc: example.qir:81:33,
+        loc: example.qir:64:33,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "entry",
         ),
-        loc: example.qir:81:34,
+        loc: example.qir:64:34,
         len: example.qir at index 5,
     },
     Token {
         raw: OpenCurly,
-        loc: example.qir:81:40,
+        loc: example.qir:64:40,
         len: example.qir at index 1,
     },
     Token {
         raw: BlockRefOrAnd,
-        loc: example.qir:82:5,
+        loc: example.qir:65:5,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "entry",
         ),
-        loc: example.qir:82:6,
+        loc: example.qir:65:6,
         len: example.qir at index 5,
     },
     Token {
         raw: OpenCurly,
-        loc: example.qir:82:12,
+        loc: example.qir:65:12,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:83:9,
+        loc: example.qir:66:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "c",
         ),
-        loc: example.qir:83:10,
+        loc: example.qir:66:10,
         len: example.qir at index 1,
     },
     Token {
         raw: Colon,
-        loc: example.qir:83:11,
+        loc: example.qir:66:11,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "u32",
         ),
-        loc: example.qir:83:13,
+        loc: example.qir:66:13,
         len: example.qir at index 3,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:83:16,
+        loc: example.qir:66:16,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:84:9,
+        loc: example.qir:67:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "c",
         ),
-        loc: example.qir:84:10,
+        loc: example.qir:67:10,
         len: example.qir at index 1,
     },
     Token {
         raw: Property,
-        loc: example.qir:84:11,
+        loc: example.qir:67:11,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "0",
         ),
-        loc: example.qir:84:12,
+        loc: example.qir:67:12,
         len: example.qir at index 1,
     },
     Token {
         raw: Assign,
-        loc: example.qir:84:14,
+        loc: example.qir:67:14,
         len: example.qir at index 1,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:84:16,
+        loc: example.qir:67:16,
         len: example.qir at index 1,
     },
     Token {
         raw: Add,
-        loc: example.qir:84:17,
+        loc: example.qir:67:17,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:84:19,
+        loc: example.qir:67:19,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "a",
         ),
-        loc: example.qir:84:20,
+        loc: example.qir:67:20,
         len: example.qir at index 1,
     },
     Token {
         raw: Property,
-        loc: example.qir:84:21,
+        loc: example.qir:67:21,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "0",
         ),
-        loc: example.qir:84:22,
+        loc: example.qir:67:22,
         len: example.qir at index 1,
     },
     Token {
         raw: Comma,
-        loc: example.qir:84:23,
+        loc: example.qir:67:23,
         len: example.qir at index 1,
     },
     Token {
         raw: Variable,
-        loc: example.qir:84:25,
+        loc: example.qir:67:25,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "b",
         ),
-        loc: example.qir:84:26,
+        loc: example.qir:67:26,
         len: example.qir at index 1,
     },
     Token {
         raw: Property,
-        loc: example.qir:84:27,
+        loc: example.qir:67:27,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "0",
         ),
-        loc: example.qir:84:28,
+        loc: example.qir:67:28,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:84:29,
+        loc: example.qir:67:29,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:84:30,
+        loc: example.qir:67:30,
         len: example.qir at index 1,
     },
     Token {
         raw: OpenParen,
-        loc: example.qir:85:9,
+        loc: example.qir:68:9,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "ret",
         ),
-        loc: example.qir:85:10,
+        loc: example.qir:68:10,
         len: example.qir at index 3,
     },
     Token {
         raw: Variable,
-        loc: example.qir:85:14,
+        loc: example.qir:68:14,
         len: example.qir at index 1,
     },
     Token {
         raw: Ident(
             "c",
         ),
-        loc: example.qir:85:15,
+        loc: example.qir:68:15,
         len: example.qir at index 1,
     },
     Token {
         raw: Property,
-        loc: example.qir:85:16,
+        loc: example.qir:68:16,
         len: example.qir at index 1,
     },
     Token {
         raw: NumericLiteral(
             "0",
         ),
-        loc: example.qir:85:17,
+        loc: example.qir:68:17,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseParen,
-        loc: example.qir:85:18,
+        loc: example.qir:68:18,
         len: example.qir at index 1,
     },
     Token {
         raw: Semicolon,
-        loc: example.qir:85:19,
+        loc: example.qir:68:19,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseCurly,
-        loc: example.qir:86:5,
+        loc: example.qir:69:5,
         len: example.qir at index 1,
     },
     Token {
         raw: CloseCurly,
-        loc: example.qir:87:1,
+        loc: example.qir:70:1,
         len: example.qir at index 1,
     },
 ]

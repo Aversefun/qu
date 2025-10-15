@@ -86,63 +86,6 @@ Func(
         external_name: "printf",
     },
 )
-StructDef(
-    StructDef {
-        annotations: [
-            Repr {
-                cc: C,
-                packed: false,
-            },
-        ],
-        name: "Test",
-        fields: [
-            (
-                "field0",
-                Primitive(
-                    U8,
-                ),
-            ),
-            (
-                "field1",
-                Primitive(
-                    U16,
-                ),
-            ),
-            (
-                "field2",
-                Primitive(
-                    F32,
-                ),
-            ),
-            (
-                "length",
-                Primitive(
-                    Uptr,
-                ),
-            ),
-            (
-                "field3",
-                Pointer(
-                    List {
-                        ty: Struct(
-                            "Test",
-                        ),
-                        length: Variable(
-                            Real(
-                                VarRef {
-                                    name: "length",
-                                    version: Some(
-                                        0,
-                                    ),
-                                },
-                            ),
-                        ),
-                    },
-                ),
-            ),
-        ],
-    },
-)
 Func(
     Internal {
         sig: InternalFunctionSignature {
@@ -179,26 +122,13 @@ Func(
             result: Some(
                 Never,
             ),
+            entry_block: "entry",
         },
         func_vars: [
             (
                 "v0",
                 Primitive(
                     I32,
-                ),
-            ),
-            (
-                "m0",
-                Memory(
-                    Primitive(
-                        I32,
-                    ),
-                ),
-            ),
-            (
-                "s0",
-                Struct(
-                    "Test",
                 ),
             ),
         ],
@@ -220,109 +150,6 @@ Func(
                                 U128(
                                     0,
                                 ),
-                            ),
-                        ),
-                    ),
-                    Assign(
-                        Real(
-                            VarRef {
-                                name: "m0",
-                                version: None,
-                            },
-                        ),
-                        Value(
-                            Constant(
-                                U128(
-                                    1,
-                                ),
-                            ),
-                        ),
-                    ),
-                    Assign(
-                        Struct(
-                            VarRef {
-                                name: "s0",
-                                version: Some(
-                                    0,
-                                ),
-                            },
-                            "field0",
-                        ),
-                        Value(
-                            Constant(
-                                U128(
-                                    0,
-                                ),
-                            ),
-                        ),
-                    ),
-                    Assign(
-                        Struct(
-                            VarRef {
-                                name: "s0",
-                                version: Some(
-                                    0,
-                                ),
-                            },
-                            "field1",
-                        ),
-                        Value(
-                            Constant(
-                                U128(
-                                    0,
-                                ),
-                            ),
-                        ),
-                    ),
-                    Assign(
-                        Struct(
-                            VarRef {
-                                name: "s0",
-                                version: Some(
-                                    0,
-                                ),
-                            },
-                            "field2",
-                        ),
-                        Value(
-                            Constant(
-                                F64(
-                                    0.0,
-                                ),
-                            ),
-                        ),
-                    ),
-                    Assign(
-                        Struct(
-                            VarRef {
-                                name: "s0",
-                                version: Some(
-                                    0,
-                                ),
-                            },
-                            "length",
-                        ),
-                        Value(
-                            Constant(
-                                U128(
-                                    0,
-                                ),
-                            ),
-                        ),
-                    ),
-                    Assign(
-                        Struct(
-                            VarRef {
-                                name: "s0",
-                                version: Some(
-                                    0,
-                                ),
-                            },
-                            "field3",
-                        ),
-                        Value(
-                            Constant(
-                                DropAddress,
                             ),
                         ),
                     ),
@@ -664,7 +491,6 @@ Func(
                 ],
             },
         ],
-        entry_block: "entry",
     },
 )
 Func(
@@ -674,6 +500,7 @@ Func(
             name: "no_return_function",
             params: [],
             result: None,
+            entry_block: "entry",
         },
         func_vars: [],
         code: [
@@ -701,7 +528,6 @@ Func(
                 ],
             },
         ],
-        entry_block: "entry",
     },
 )
 Func(
@@ -730,6 +556,7 @@ Func(
                     ),
                 ),
             ),
+            entry_block: "entry",
         },
         func_vars: [],
         code: [
@@ -791,6 +618,5 @@ Func(
                 ],
             },
         ],
-        entry_block: "entry",
     },
 )

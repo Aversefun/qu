@@ -928,12 +928,23 @@ impl<'a> Parse<'a> for InternalFunctionSignature<'a> {
                 None
             };
 
+            if !input[i].raw.is_block() {
+                bail!(UnexpectedToken(input[i], "expected entry block"));
+            }
+            i += 1;
+
+            let RawToken::Ident(entry) = input[i].raw.clone() else {
+                bail!(UnexpectedToken(input[i], "expected entry block"));
+            };
+            i += 1;
+
             Ok((
                 InternalFunctionSignature {
                     annotations: annotations.into(),
                     name: name.into(),
                     params: params.into(),
                     result,
+                    entry_block: entry,
                 },
                 add_newline_to_len!(i, input),
             ))
@@ -1560,16 +1571,6 @@ impl<'a> Parse<'a> for FunctionDef<'a> {
         let (sig, len) = InternalFunctionSignature::parse((), &input[i..])?;
         i += len;
 
-        if !input[i].raw.is_block() {
-            bail!(UnexpectedToken(input[i], "expected entry block"));
-        }
-        i += 1;
-
-        let RawToken::Ident(entry) = input[i].raw.clone() else {
-            bail!(UnexpectedToken(input[i], "expected entry block"));
-        };
-        i += 1;
-
         let mut vars = Vec::new();
         let mut blocks = Vec::new();
 
@@ -1614,7 +1615,6 @@ impl<'a> Parse<'a> for FunctionDef<'a> {
                 sig,
                 func_vars: vars.into(),
                 code: blocks.into(),
-                entry_block: entry,
             },
             i,
         ))

@@ -104,12 +104,12 @@ enum LinkFlavor {
 }
 
 #[derive(Debug, Default)]
-pub struct CodegenX64Linux<'a> {
+pub struct CodegenX64LinuxHardFloat<'a> {
     state: Option<CodegenState<'a>>,
     next_i: usize,
 }
 
-impl<'a> Codegen<'a> for CodegenX64Linux<'a> {
+impl<'a> Codegen<'a> for CodegenX64LinuxHardFloat<'a> {
     const BIN_EXTENSION: &'static str = "";
     const CAN_OUTPUT_ASM: bool = true;
     const CAN_OUTPUT_BIN: bool = true;
@@ -155,7 +155,7 @@ impl<'a> Codegen<'a> for CodegenX64Linux<'a> {
             for i in 0..codegen_units {
                 threads.push(
                     thread::Builder::new()
-                        .name(input_name.to_string() + &format!(": unit {i}"))
+                        .name(input_name.to_string() + &format!(" unit {i}"))
                         .spawn(compile::compile_thread(
                             compile_recv.clone(),
                             result_send.clone(),
@@ -201,14 +201,14 @@ impl<'a> Codegen<'a> for CodegenX64Linux<'a> {
     }
     fn compile(
         &mut self,
-        sig: InternalFunctionSignature,
+        sig: &InternalFunctionSignature,
         func_locals: &'a [(String, Type)],
         block: Block,
         is_entry: bool,
     ) -> Result<(), crate::errors::CodegenError<'a>> {
         let state = self.state.as_mut().unwrap();
         let packet = CodegenPacket {
-            sig,
+            sig: sig.clone(),
             func_locals: func_locals.to_vec(),
             block,
             is_entry,
@@ -242,11 +242,17 @@ impl<'a> Codegen<'a> for CodegenX64Linux<'a> {
                 result_chan,
                 threads,
             } => {
-                for thread in threads {
-                    let _ = thread.join();
+                for (i, thread) in threads.into_iter().enumerate() {
+                    if thread.is_finished() {
+                        return Err(CodegenError::CodegenUnitFinishedEarly(i, "unit finished early".to_string()));
+                    }
+                    println!("unit {i} has not finished");
+                    if thread.join().is_err() {
+                        return Err(CodegenError::CodegenUnitFinishedEarly(i, "unit panicked".to_string()));
+                    }
                 }
                 let mut results = Vec::new();
-                for result in result_chan.iter() {
+                for result in &result_chan {
                     results.push(result?);
                 }
                 results.sort_by(|v1, v2| v1.i.cmp(&v2.i));
@@ -257,7 +263,7 @@ impl<'a> Codegen<'a> for CodegenX64Linux<'a> {
         self.state = Some(state);
         Ok(())
     }
-    fn output_asm(&mut self) -> Result<String, CodegenError<'a>> {
+    fn emit_asm(&mut self) -> Result<String, CodegenError<'a>> {
         Ok(self
             .state
             .take()
@@ -276,7 +282,7 @@ impl<'a> Codegen<'a> for CodegenX64Linux<'a> {
             })
             .collect())
     }
-    fn output_bin(&mut self, temp_dir: PathBuf) -> Result<Vec<u8>, CodegenError<'a>> {
+    fn emit_bin(&mut self, temp_dir: PathBuf) -> Result<Vec<u8>, CodegenError<'a>> {
         let input_name = self.state.as_ref().unwrap().input_name;
         let verbose = self.state.as_ref().unwrap().verbose;
 
@@ -324,7 +330,7 @@ impl<'a> Codegen<'a> for CodegenX64Linux<'a> {
             }
         }
 
-        let asm = self.output_asm()?;
+        let asm = self.emit_asm()?;
 
         if linker.is_some() ^ linker_flavor.is_some() {
             return Err(CodegenError::Generic(

@@ -8,28 +8,11 @@ fn libc_exit(i32) -> !; // function returning is undefined behavior
 @extern(C, "printf")
 fn libc_printf(c_str, ...) -> i32; // user assumes responsibility of ensuring the correct number of arguments
 
-@repr(C)
-struct Test {
-    $field0: u8,
-    $field1: u16,
-    $field2: f32,
-    $length: uptr,
-    $field3: *[Test; $length.0],
-}
-
 @export(C, "main")
 fn main($argc: uptr, $argv: *[c_str; $argc.0]) -> ! &entry {
     $v0: i32;
-    $m0: mem i32; // a value in memory (typed uptr)
-    $s0: Test;
     &entry {
         $v0.1 = 0;
-        $m0._ = 1; // very obvious that it's a memory address
-        $s0.0.field0 = 0; // default value of undef
-        $s0.0.field1 = 0; // can only set each field once per version
-        $s0.0.field2 = 0.0;
-        $s0.0.length = 0;
-        $s0.0.field3 = &_; // special address that is guarenteed to be non-null but shouldn't be dereferenced
         x86_64:intel [ ; Will be skipped over on other architectures.
             ; Inline assembly
             add eax, 8

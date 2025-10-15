@@ -28,6 +28,8 @@
 #![feature(exit_status_error)]
 #![feature(string_from_utf8_lossy_owned)]
 #![feature(new_range_api)]
+#![feature(const_trait_impl)]
+#![feature(const_cmp)]
 
 use std::{borrow::Cow, str::FromStr};
 
@@ -47,7 +49,7 @@ pub type List<'a, T> = Cow<'a, [T]>;
 pub const ARCHS: &[&str] = &["x86_64"];
 
 /// Supported targets.
-pub const TARGETS: &[&str] = &["x86_64-linux"];
+pub const TARGETS: &[&str] = &["x86_64-linux+hardfloat"];
 
 /// A semver-style version.
 #[derive(Clone, Debug, Default, PartialOrd, Ord, Hash)]
@@ -295,7 +297,7 @@ macro_rules! impl_unwrap {
     };
     ($(#[$attrs:meta])* $parent:ty, $t:ty, $ty:path, $name:ident) => {
         impl_unwrap!($(#[$attrs])* $parent, $t, $ty, $ty (v) => v, $name);
-        $crate::ir::impl_is!($(#[$attrs])* $ty (v), $name);
+        $crate::impl_is!($(#[$attrs])* $ty (v), $name);
     };
 }
 

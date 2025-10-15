@@ -113,6 +113,10 @@ pub enum ExtendedVarRef {
     Drop,
 }
 
+impl<'a> ExtendedVarRef {
+    impl_unwrap!(ExtendedVarRef, VarRef, ExtendedVarRef::Real, real);
+}
+
 impl_from_borrowed!(ExtendedVarRef, super::ExtendedVarRef<'a>, enum {
     Real(vref),
     Struct(vref, field),
@@ -136,6 +140,10 @@ pub enum RegRef {
     Real(VarRef),
     /// A field of a struct.
     Struct(VarRef, String),
+}
+
+impl<'a> RegRef {
+    impl_unwrap!(RegRef, VarRef, RegRef::Real, real);
 }
 
 impl_from_borrowed!(RegRef, super::RegRef<'a>, enum {
@@ -305,6 +313,8 @@ pub struct InternalFunctionSignature {
     pub params: Vec<(String, Type)>,
     /// The result of the function.
     pub result: Option<RetType>,
+    /// The entry block.
+    pub entry_block: String,
 }
 
 impl From<super::InternalFunctionSignature<'_>> for InternalFunctionSignature {
@@ -321,6 +331,7 @@ impl From<super::InternalFunctionSignature<'_>> for InternalFunctionSignature {
                 })
                 .collect(),
             result: value.result.map(|v| v.into()),
+            entry_block: value.entry_block.into(),
         }
     }
 }
