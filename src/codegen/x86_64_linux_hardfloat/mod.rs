@@ -295,13 +295,13 @@ impl<'a> Codegen<'a> for CodegenX64LinuxHardFloat<'a> {
                     assembler = Some(value.ok_or(CodegenError::InvalidOption(
                         "asm".to_string(),
                         "expected a value to be provided for assembler argument".to_string(),
-                    ))?)
+                    ))?);
                 }
                 "link" => {
                     linker = Some(value.ok_or(CodegenError::InvalidOption(
                         "link".to_string(),
                         "expected a value to be provided for linker argument".to_string(),
-                    ))?)
+                    ))?);
                 }
                 "link_flavor" => {
                     linker_flavor = Some(
@@ -324,7 +324,7 @@ impl<'a> Codegen<'a> for CodegenX64LinuxHardFloat<'a> {
                                 ));
                             }
                         },
-                    )
+                    );
                 }
                 v => return Err(CodegenError::UnknownOption(v.to_string())),
             }
@@ -376,7 +376,7 @@ impl<'a> Codegen<'a> for CodegenX64LinuxHardFloat<'a> {
                         let stdout = str::from_utf8(&v.stdout);
                         v.status.exit_ok().is_ok()
                             && stdout.is_ok()
-                            && stdout.unwrap().contains(&"GNU ld")
+                            && stdout.unwrap().contains("GNU ld")
                     })
                     .unwrap_or(false)
                 {
@@ -399,7 +399,7 @@ impl<'a> Codegen<'a> for CodegenX64LinuxHardFloat<'a> {
                             let stdout = str::from_utf8(&v.stdout);
                             v.status.exit_ok().is_ok()
                                 && stdout.is_ok()
-                                && stdout.unwrap().contains(&"Microsoft")
+                                && stdout.unwrap().contains("Microsoft")
                         })
                         .unwrap_or(false),
                 ))
@@ -426,7 +426,7 @@ impl<'a> Codegen<'a> for CodegenX64LinuxHardFloat<'a> {
                         let stdout = str::from_utf8(&v.stdout);
                         v.status.exit_ok().is_ok()
                             && stdout.is_ok()
-                            && stdout.unwrap().contains(&"GNU assembler")
+                            && stdout.unwrap().contains("GNU assembler")
                     })
                     .unwrap_or(false)
                 {

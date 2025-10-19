@@ -6,7 +6,7 @@ use super::{CallingConvention, FunctionHint, Primitive, RuntimeCheck, StructAnno
 
 /// Implements `From<$borrowed<'a>> for $owned`.
 ///
-/// Uses .into() on them, it should call .to_owned or .into_owned.
+/// Uses .`into()` on them, it should call .`to_owned` or .`into_owned`.
 macro_rules! impl_from_borrowed {
     ($owned:ty, $borrowed:ty, struct { $($field:ident),* $(,)? }) => {
         impl<'a> From<$borrowed> for $owned {
@@ -258,6 +258,7 @@ pub enum Type {
 }
 
 impl Type {
+    #[must_use] 
     pub fn get_size(&self) -> Option<u64> {
         match self {
             Self::Primitive(prim) => prim.get_size(),
@@ -330,7 +331,7 @@ impl From<super::InternalFunctionSignature<'_>> for InternalFunctionSignature {
                     (v.0.into(), v.1.into())
                 })
                 .collect(),
-            result: value.result.map(|v| v.into()),
+            result: value.result.map(std::convert::Into::into),
             entry_block: value.entry_block.into(),
         }
     }
@@ -368,7 +369,7 @@ pub struct StructDef {
 impl From<super::StructDef<'_>> for StructDef {
     fn from(value: super::StructDef<'_>) -> Self {
         StructDef {
-            annotations: value.annotations.iter().map(|v| v.clone().into()).collect(),
+            annotations: value.annotations.iter().map(|v| (*v)).collect(),
             name: value.name.into(),
             fields: value
                 .fields
@@ -398,7 +399,7 @@ impl From<super::ModuleAnnotation<'_>> for ModuleAnnotation {
         match value {
             super::ModuleAnnotation::QuVer(v) => Self::QuVer(v.into()),
             super::ModuleAnnotation::RuntimeChecks(v) => {
-                Self::RuntimeChecks(v.iter().map(|v| v.clone().into()).collect())
+                Self::RuntimeChecks(v.iter().map(|v| (*v)).collect())
             }
             super::ModuleAnnotation::CheckViolated(v) => {
                 Self::CheckViolated(v.iter().map(|v| v.clone().into()).collect())
@@ -436,7 +437,7 @@ impl From<super::ExternalFunctionSignature<'_>> for ExternalFunctionSignature {
                 })
                 .collect(),
             params_continue: value.params_continue,
-            result: value.result.map(|v| v.into()),
+            result: value.result.map(std::convert::Into::into),
         }
     }
 }
@@ -481,7 +482,7 @@ pub enum ProdInstruction {
 
 impl From<super::code::ProdInstruction<'_>> for ProdInstruction {
     fn from(value: super::code::ProdInstruction<'_>) -> Self {
-        use super::code::ProdInstruction::*;
+        use super::code::ProdInstruction::{Add, Sub, Mul, Div, Rem, And, Or, Not, Xor, DerefPtr, CreatePtr, Phi, Call, Value};
         match value {
             Add(v1, v2) => Self::Add(v1.into(), v2.into()),
             Sub(v1, v2) => Self::Sub(v1.into(), v2.into()),
@@ -594,7 +595,7 @@ pub enum NoProdInstruction {
 
 impl From<super::code::NoProdInstruction<'_>> for NoProdInstruction {
     fn from(value: super::code::NoProdInstruction<'_>) -> Self {
-        use super::code::NoProdInstruction::*;
+        use super::code::NoProdInstruction::{Call, CmpBr, Jmp, InlineAssembly, VarDef, Assign, Return};
         match value {
             Call(v) => Self::Call(v.into()),
             CmpBr {
@@ -605,7 +606,7 @@ impl From<super::code::NoProdInstruction<'_>> for NoProdInstruction {
                 b_false,
             } => Self::CmpBr {
                 v0: v0.into(),
-                cond: cond.into(),
+                cond,
                 v1: v1.into(),
                 b_true: b_true.into(),
                 b_false: b_false.into(),

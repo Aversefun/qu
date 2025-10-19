@@ -69,15 +69,15 @@ pub struct Version<'a> {
     pub build: Option<Str<'a>>,
 }
 
-impl Into<OwnedVersion> for Version<'_> {
-    fn into(self) -> OwnedVersion {
+impl From<Version<'_>> for OwnedVersion {
+    fn from(val: Version<'_>) -> Self {
         OwnedVersion {
-            strict: self.strict,
-            major: self.major,
-            minor: self.minor,
-            patch: self.patch,
-            prerelease: self.prerelease.clone().map(|v| v.into_owned()),
-            build: self.build.clone().map(|v| v.into_owned()),
+            strict: val.strict,
+            major: val.major,
+            minor: val.minor,
+            patch: val.patch,
+            prerelease: val.prerelease.clone().map(std::borrow::Cow::into_owned),
+            build: val.build.clone().map(std::borrow::Cow::into_owned),
         }
     }
 }

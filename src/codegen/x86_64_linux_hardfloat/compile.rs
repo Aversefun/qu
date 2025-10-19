@@ -432,10 +432,10 @@ fn generate_value_stack(
                 format!("    push .data.const_{index}")
             }
         }),
-        Value::Undef => result.push_str(&format!("    ; undef/undefined behavior!")),
+        Value::Undef => result.push_str("    ; undef/undefined behavior!"),
         Value::Variable(v) => result.push_str(&format!(
             "    push {}",
-            match reg_mapping.get(&v).unwrap() {
+            match reg_mapping.get(v).unwrap() {
                 RegLoc::Reg(reg) => reg_id_to_name(*reg).to_string(),
                 RegLoc::Mem(mem) => mem.clone(),
             }
@@ -451,7 +451,7 @@ fn generate_prod_instr(
     constants: &mut String,
     to: ExtendedVarRef,
 ) {
-    use ProdInstruction::*;
+    use ProdInstruction::{Add, Sub, Mul, Div, Rem, And, Or, Not, Xor, DerefPtr, CreatePtr, Phi, Call, Value};
     match instr {
         Add(v0, v1) => {
             if to == ExtendedVarRef::Drop {
@@ -471,8 +471,8 @@ fn generate_prod_instr(
                     ExtendedVarRef::Drop => unreachable!(),
                 })
                 .unwrap();
-            result.push_str(&format!("    pop {}", reg2));
-            result.push_str(&format!("    pop {}", reg1));
+            result.push_str(&format!("    pop {reg2}"));
+            result.push_str(&format!("    pop {reg1}"));
         }
         Sub(v0, v1) => {}
         Mul(v0, v1) => {}

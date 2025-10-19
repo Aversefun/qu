@@ -205,8 +205,9 @@ impl Primitive {
     impl_is!(Primitive::CString, cstr);
     impl_is!(Primitive::String, str);
 
+    #[must_use] 
     pub fn get_size(self) -> Option<u64> {
-        use Primitive::*;
+        use Primitive::{U8, I8, U16, I16, U32, I32, F32, U64, I64, F64, Uptr, Iptr, U128, I128, CString, String};
         match self {
             U8 | I8 => Some(1),
             U16 | I16 => Some(2),
