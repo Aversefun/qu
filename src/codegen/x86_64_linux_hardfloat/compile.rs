@@ -547,6 +547,7 @@ pub fn compile<'a>(
 
     let mut var_sizes = func_locals
         .iter()
+        .chain(sig.params.iter())
         .map(|v| {
             (
                 v.0.clone(),
@@ -584,7 +585,7 @@ pub fn compile<'a>(
         let new_vars: Vec<RegRef> = instr.clone().into();
         for vref in new_vars {
             if !allocate_regs.iter().any(|v| v.0 == vref) {
-                let name = vref.clone().unwrap_real().name;
+                let name = dbg!(vref.clone().unwrap_real().name);
                 allocate_regs.push((
                     vref,
                     allocate_regs
@@ -600,12 +601,12 @@ pub fn compile<'a>(
             .map(|v| {
                 (
                     v.0,
-                    v.1.some_reg_id().map(RegLoc::Reg).unwrap_or_else(|| {
+                    v.1.some_reg_id().map_or_else(|| {
                         let index = bss.len();
                         bss.push_str(&format!("    .bss_{index}: .space 16"));
                         let reg_ref = format!(".bss.bss_{index}");
                         RegLoc::Mem(reg_ref)
-                    }),
+                    }, RegLoc::Reg),
                 )
             })
             .collect::<HashMap<_, _>>();

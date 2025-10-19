@@ -155,6 +155,23 @@ impl<'a> ConstValue<'a> {
 
     impl_unwrap!(ConstValue, Str<'a>, ConstValue::CString, cstr);
     impl_unwrap!(ConstValue, Str<'a>, ConstValue::String, str);
+
+    /// Returns whether this `ConstValue` is numeric and not a float.
+    #[must_use]
+    pub fn is_integer(&self) -> bool {
+        self.is_u8()
+            || self.is_i8()
+            || self.is_u16()
+            || self.is_i16()
+            || self.is_u32()
+            || self.is_i32()
+            || self.is_u64()
+            || self.is_i64()
+            || self.is_u128()
+            || self.is_i128()
+            || self.is_uptr()
+            || self.is_iptr()
+    }
 }
 
 /// A primitive type.
@@ -205,9 +222,11 @@ impl Primitive {
     impl_is!(Primitive::CString, cstr);
     impl_is!(Primitive::String, str);
 
-    #[must_use] 
+    #[must_use]
     pub fn get_size(self) -> Option<u64> {
-        use Primitive::{U8, I8, U16, I16, U32, I32, F32, U64, I64, F64, Uptr, Iptr, U128, I128, CString, String};
+        use Primitive::{
+            CString, F32, F64, I8, I16, I32, I64, I128, Iptr, String, U8, U16, U32, U64, U128, Uptr,
+        };
         match self {
             U8 | I8 => Some(1),
             U16 | I16 => Some(2),

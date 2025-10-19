@@ -10,7 +10,6 @@
     clippy::assertions_on_result_states,
     clippy::panic,
     clippy::unwrap_used,
-    clippy::missing_asserts_for_indexing
 )]
 #![allow(
     clippy::cast_possible_truncation,
